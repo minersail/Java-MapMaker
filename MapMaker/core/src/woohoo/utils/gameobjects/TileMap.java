@@ -232,4 +232,15 @@ public class TileMap
             mapWidth--;
         }
     }
+	
+	public static List<String> getCodes()
+	{
+		List<String> codes = new ArrayList<>();
+		
+		for (Tile tile : tileList)
+		{
+			codes.add(tile.getCode());
+		}		
+		return codes;
+	}
 }

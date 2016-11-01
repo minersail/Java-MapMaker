@@ -49,6 +49,14 @@ public class Tile
                      rotation);                                                     // Rotation
         batcher.setColor(Color.WHITE);
     }
+	
+	public String getCode()
+	{
+		String first = Integer.toString(Math.abs(rotation / 90) % 4, 16);
+		String texture = Integer.toString(textureID, 16);
+		
+		return first + "0" + (texture.length() == 1 ? "0" : "") + texture;
+	}
     
     public void highlight(boolean highlight)
     {
@@ -70,6 +78,8 @@ public class Tile
         
         tile.setRegion(tileX, tileY, tile.getRegionWidth(), tile.getRegionHeight());
         tile.flip(false, true);
+		
+		textureID = tileID;
     }
     
     public void setRotation(int rot)

@@ -1,7 +1,9 @@
 package woohoo.utils.gameobjects;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input.TextInputListener;
 import com.badlogic.gdx.InputMultiplexer;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -11,6 +13,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import java.util.List;
 import woohoo.utils.framework.InputHandler;
 import static woohoo.utils.gameworld.GameRenderer.tileSet;
 
@@ -20,6 +23,8 @@ public class TileSelector
     private static Skin skin;
     private static Table selectRow;
     private static Table editRow;
+	
+	private static InputHandler input = new InputHandler();
     
     private static Texture left = new Texture("images/leftbutton.png");
     private static Texture right = new Texture("images/rightbutton.png");
@@ -79,13 +84,77 @@ public class TileSelector
             editRow.row();
         }
 		
+		TileButton undo = new TileButton(skin, new TextureRegion(new Texture("images/undo.png")));
+        undo.addListener(new ClickListener()
+        {
+            @Override
+            public void clicked(InputEvent event, float x, float y)
+            {
+                
+            }
+        });
+        editRow.add(undo).prefWidth(80).prefHeight(80);
+        editRow.row();
+		
 		TileButton export = new TileButton(skin, new TextureRegion(new Texture("images/export.png")));
         export.addListener(new ClickListener()
         {
             @Override
             public void clicked(InputEvent event, float x, float y)
             {
-                
+                Gdx.input.getTextInput(new TextInputListener()
+				{					
+					@Override
+					public void input(String text)
+					{
+						if (text.equals(""))
+							return;
+						
+						List<String> codes = TileMap.getCodes();
+						FileHandle file = new FileHandle("maps/" + text + ".txt");
+						
+						if (file.exists())
+						{		
+							Gdx.input.getTextInput(new TextInputListener()
+							{
+								@Override
+								public void input(String text)
+								{
+									if (text.toLowerCase().equals("yes"))
+									{
+										file.delete();
+										
+										for (int i = 0; i < codes.size(); i++)
+										{
+											file.writeString(codes.get(i), true);
+
+											if ((i + 1) % TileMap.mapWidth == 0)
+												file.writeString(System.getProperty("line.separator"), true);
+											else if (i <= codes.size() - 1)
+												file.writeString(" ", true);
+										}
+									}
+								}
+								
+								@Override public void canceled(){}
+							}, "Overwrite?", "", ".txt will automatically be appended");
+						}
+						else
+						{						
+							for (int i = 0; i < codes.size(); i++)
+							{
+								file.writeString(codes.get(i), true);
+
+								if ((i + 1) % TileMap.mapWidth == 0)
+									file.writeString(System.getProperty("line.separator"), true);
+								else if (i <= codes.size() - 1)
+									file.writeString(" ", true);
+							}
+						}
+					}
+
+					@Override public void canceled(){}
+				}, "Choose a name for this file", "", ".txt will automatically be appended");
             }
         });
         editRow.add(export).prefWidth(80).prefHeight(80);
@@ -173,7 +242,7 @@ public class TileSelector
         down.setPosition(720, 0);
         down.setSize(80, 80);
                 
-        InputMultiplexer im = new InputMultiplexer(uiStage, new InputHandler());
+        InputMultiplexer im = new InputMultiplexer(uiStage, input);
         Gdx.input.setInputProcessor(im);
     }
     
