@@ -25,7 +25,7 @@ public class Tile
     
     public Tile(int tileID, int functionID, int initX, int initY)
     {
-		int columns = Gdx.graphics.getWidth() / G_TILE_WIDTH;
+		int columns = GameRenderer.tileSet.getWidth() / T_TILE_WIDTH;
 		int tileX = (tileID % columns) * T_TILE_WIDTH;
 		int tileY = (tileID / columns) * T_TILE_HEIGHT;
 		

@@ -227,20 +227,20 @@ public class TileMap
             
             for (int i = mapWidth * (mapHeight - 1); i >= 0; i -= mapWidth)
             {
-				tileList.remove(i);
+                tileList.remove(i);
             }
             mapWidth--;
         }
     }
 	
-	public static List<String> getCodes()
-	{
-		List<String> codes = new ArrayList<>();
-		
-		for (Tile tile : tileList)
-		{
-			codes.add(tile.getCode());
-		}		
-		return codes;
-	}
+    public static List<String> getCodes()
+    {
+        List<String> codes = new ArrayList<>();
+
+        for (Tile tile : tileList)
+        {
+            codes.add(tile.getCode());
+        }		
+        return codes;
+    }
 }

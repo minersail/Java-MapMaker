@@ -137,7 +137,7 @@ public class TileSelector
 								}
 								
 								@Override public void canceled(){}
-							}, "Overwrite?", "", ".txt will automatically be appended");
+							}, "Overwrite?", "", "Yes to overwrite, no to try again");
 						}
 						else
 						{						
