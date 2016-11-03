@@ -1,10 +1,11 @@
 package woohoo.utils.framework;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class UndoManager
 {
-	private static List<UndoState> states;
+	private static List<UndoState> states = new ArrayList<>();
 	
 	public static List<UndoState> getStates()
 	{
@@ -18,6 +19,11 @@ public class UndoManager
 	
 	public static UndoState getLastState()
 	{
-		return states.get(states.size() - 1);
+        return states.remove(states.size() - 1);
 	}
+    
+    public static int getUndosLeft()
+    {
+        return states.size();
+    }
 }

@@ -36,7 +36,6 @@ public class TileButton extends Button
     
     public int getTextureID()
     {
-        System.out.println(sprite.getRegionX() / 16 + sprite.getRegionY());
         return sprite.getRegionX() / 16 + sprite.getRegionY();
     }
     

@@ -5,6 +5,8 @@ import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import java.util.ArrayList;
 import java.util.List;
+import woohoo.utils.framework.UndoManager;
+import woohoo.utils.framework.UndoState;
 
 public class TileMap
 {
@@ -126,6 +128,8 @@ public class TileMap
     
     public static void replaceAll(List<Tile> tiles)
     {
+        UndoManager.add(new UndoState(tileList, mapWidth, mapHeight));
+        
         for (Tile tile : tiles)
         {
             tile.replaceTexture(TileSelector.getCurrentID());
@@ -148,6 +152,8 @@ public class TileMap
     
     public static void addRow(String dir)
     {
+        UndoManager.add(new UndoState(tileList, mapWidth, mapHeight));
+        
         if (dir.equals("down"))
         {
             for (int i = 0; i < mapWidth; i++)
@@ -195,6 +201,8 @@ public class TileMap
     
     public static void deleteRow(String dir)
     {
+        UndoManager.add(new UndoState(tileList, mapWidth, mapHeight));
+        
         if (dir.equals("down"))
         {
             for (int i = mapHeight * mapWidth - 1; i > (mapHeight - 1) * mapWidth - 1; i--)
@@ -242,5 +250,12 @@ public class TileMap
             codes.add(tile.getCode());
         }		
         return codes;
+    }
+    
+    public static void useUndo(UndoState undo)
+    {
+        tileList = undo.state;
+        mapWidth = undo.width;
+        mapHeight = undo.height;
     }
 }
