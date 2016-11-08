@@ -128,7 +128,7 @@ public class TileMap
     
     public static void replaceAll(List<Tile> tiles)
     {
-        UndoManager.add(new UndoState(tileList, mapWidth, mapHeight));
+        UndoManager.add(new UndoState(new ArrayList<>(tileList), mapWidth, mapHeight));
         
         for (Tile tile : tiles)
         {
@@ -152,7 +152,7 @@ public class TileMap
     
     public static void addRow(String dir)
     {
-        UndoManager.add(new UndoState(tileList, mapWidth, mapHeight));
+        UndoState state = new UndoState(new ArrayList<>(tileList), mapWidth, mapHeight);
         
         if (dir.equals("down"))
         {
@@ -166,6 +166,7 @@ public class TileMap
         else if (dir.equals("up"))
         {            
             moveAll(0, 1);
+            state.changeShift(0, -1);
             
             for (int i = 0; i < mapWidth; i++)
             {
@@ -188,6 +189,7 @@ public class TileMap
         else if (dir.equals("left"))
         {
             moveAll(1, 0);
+            state.changeShift(-1, 0);
             
             for (int i = 0; i < mapHeight; i++)
             {
@@ -197,11 +199,13 @@ public class TileMap
             }
             mapWidth++;
         }
+        
+        UndoManager.add(state);
     }
     
     public static void deleteRow(String dir)
     {
-        UndoManager.add(new UndoState(tileList, mapWidth, mapHeight));
+        UndoState state = new UndoState(new ArrayList<>(tileList), mapWidth, mapHeight);
         
         if (dir.equals("down"))
         {
@@ -214,6 +218,7 @@ public class TileMap
         else if (dir.equals("up"))
         {            
             moveAll(0, -1);
+            state.changeShift(0, 1);
             
             for (int i = mapWidth - 1; i >= 0; i--)
             {
@@ -232,6 +237,7 @@ public class TileMap
         else if (dir.equals("left"))
         {
             moveAll(-1, 0);
+            state.changeShift(1, 0);
             
             for (int i = mapWidth * (mapHeight - 1); i >= 0; i -= mapWidth)
             {
@@ -239,6 +245,8 @@ public class TileMap
             }
             mapWidth--;
         }
+        
+        UndoManager.add(state);
     }
 	
     public static List<String> getCodes()
@@ -257,5 +265,12 @@ public class TileMap
         tileList = undo.state;
         mapWidth = undo.width;
         mapHeight = undo.height;
+        
+        moveAll(undo.shift[0], undo.shift[1]);
+    }
+    
+    public static UndoState getCurrentState()
+    {
+        return new UndoState(tileList, mapWidth, mapHeight);
     }
 }

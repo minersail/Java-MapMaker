@@ -8,6 +8,7 @@ public class UndoState
 	public List<Tile> state;
 	public int width;
 	public int height;
+    public int[] shift = {0, 0};
 	
 	public UndoState(List<Tile> s, int w, int h)
 	{
@@ -15,4 +16,10 @@ public class UndoState
 		height = h;
 		state = s;
 	}
+    
+    public void changeShift(int x, int y)
+    {
+        shift[0] = x;
+        shift[1] = y;
+    }
 }

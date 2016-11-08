@@ -15,6 +15,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import java.util.List;
 import woohoo.utils.framework.InputHandler;
+import woohoo.utils.framework.UndoManager;
 import static woohoo.utils.gameworld.GameRenderer.tileSet;
 
 public class TileSelector
@@ -90,7 +91,7 @@ public class TileSelector
             @Override
             public void clicked(InputEvent event, float x, float y)
             {
-                
+                TileMap.useUndo(UndoManager.getLastState());
             }
         });
         editRow.add(undo).prefWidth(80).prefHeight(80);
