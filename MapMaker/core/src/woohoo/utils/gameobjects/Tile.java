@@ -12,6 +12,7 @@ public class Tile
     private GridPoint2 position = new GridPoint2();
     private TextureRegion tile;
     private int textureID;
+    private int functionID;
     private int rotation = 0;
     private Color color = Color.WHITE;
 	
@@ -23,15 +24,33 @@ public class Tile
     public static final int T_TILE_WIDTH = 16;
     public static final int T_TILE_HEIGHT = 16;
     
-    public Tile(int tileID, int functionID, int initX, int initY)
+    public Tile(int tileID, int function, int initX, int initY)
     {
 		int columns = GameRenderer.tileSet.getWidth() / T_TILE_WIDTH;
 		int tileX = (tileID % columns) * T_TILE_WIDTH;
 		int tileY = (tileID / columns) * T_TILE_HEIGHT;
 		
         textureID = tileID;
+        functionID = function;
         position.x = initX;
         position.y = initY;
+        
+        tile = new TextureRegion(GameRenderer.tileSet, tileX, tileY, T_TILE_WIDTH, T_TILE_HEIGHT);
+		rotation = 90 * functionID / 16;
+		
+		tile.flip(false, true);
+    }
+    
+    public Tile(Tile t)
+    {
+		int columns = GameRenderer.tileSet.getWidth() / T_TILE_WIDTH;
+		int tileX = (t.textureID % columns) * T_TILE_WIDTH;
+		int tileY = (t.textureID / columns) * T_TILE_HEIGHT;
+        
+        textureID = t.textureID;
+        functionID = t.functionID;
+        position.x = t.position.x;
+        position.y = t.position.y;       
         
         tile = new TextureRegion(GameRenderer.tileSet, tileX, tileY, T_TILE_WIDTH, T_TILE_HEIGHT);
 		rotation = 90 * functionID / 16;

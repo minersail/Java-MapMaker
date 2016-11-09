@@ -104,7 +104,7 @@ public class TileMap
         List<Tile> tiles = new ArrayList<>();
         for (Integer i : locations)
         {
-            tiles.add((Tile)tileList.toArray()[i]);
+            tiles.add(tileList.get(i));
         }
         
         return tiles;
@@ -128,7 +128,7 @@ public class TileMap
     
     public static void replaceAll(List<Tile> tiles)
     {
-        UndoManager.add(new UndoState(new ArrayList<>(tileList), mapWidth, mapHeight));
+        UndoManager.add(new UndoState(getTileListCopy(tileList), mapWidth, mapHeight));
         
         for (Tile tile : tiles)
         {
@@ -262,7 +262,7 @@ public class TileMap
     
     public static void useUndo(UndoState undo)
     {
-        tileList = undo.state;
+        tileList = getTileListCopy(undo.state);
         mapWidth = undo.width;
         mapHeight = undo.height;
         
@@ -272,5 +272,18 @@ public class TileMap
     public static UndoState getCurrentState()
     {
         return new UndoState(tileList, mapWidth, mapHeight);
+    }
+    
+    public static List<Tile> getTileListCopy(List<Tile> list)
+    {
+        List<Tile> newList = new ArrayList<>();
+        
+        for (Tile tile : list)
+        {
+            Tile newTile = new Tile(tile);
+            newList.add(newTile);
+        }
+        
+        return newList;
     }
 }
