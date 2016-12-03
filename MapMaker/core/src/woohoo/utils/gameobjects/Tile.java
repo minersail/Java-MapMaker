@@ -53,7 +53,7 @@ public class Tile
         position.y = t.position.y;       
         
         tile = new TextureRegion(GameRenderer.tileSet, tileX, tileY, T_TILE_WIDTH, T_TILE_HEIGHT);
-		rotation = 90 * functionID / 16;
+		rotation = t.rotation;
 		
 		tile.flip(false, true);
     }

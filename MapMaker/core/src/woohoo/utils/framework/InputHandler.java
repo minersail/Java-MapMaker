@@ -49,7 +49,6 @@ public class InputHandler implements InputProcessor
     @Override
     public boolean keyUp(int keycode)
     {
-        System.out.println(UndoManager.getUndosLeft());
         return false;
     }
 
