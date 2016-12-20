@@ -128,12 +128,22 @@ public class TileMap
     
     public static void replaceAll(List<Tile> tiles)
     {
-        UndoManager.add(new UndoState(tileList, mapWidth, mapHeight));
+        UndoManager.add(new UndoState(getTileListCopy(tileList), mapWidth, mapHeight));
         
         for (Tile tile : tiles)
         {
             tile.replaceTexture(TileSelector.getCurrentID());
             tile.setRotation(TileSelector.getCurrentRotation());
+        }
+    }
+    
+    public static void toggleWall(List<Tile> tiles)
+    {
+        UndoManager.add(new UndoState(getTileListCopy(tileList), mapWidth, mapHeight));
+        
+        for (Tile tile : tiles)
+        {
+            tile.toggleWall();
         }
     }
     
@@ -144,6 +154,7 @@ public class TileMap
     */
     public static void moveAll(int deltaX, int deltaY)
     {
+        System.out.println(deltaX + " " + deltaY);
         for (Tile tile : tileList)
         {
             tile.move(deltaX, deltaY);
@@ -152,7 +163,7 @@ public class TileMap
     
     public static void addRow(String dir)
     {
-        UndoState state = new UndoState(tileList, mapWidth, mapHeight);
+        UndoState state = new UndoState(new ArrayList<>(tileList), mapWidth, mapHeight);
         
         if (dir.equals("down"))
         {
@@ -166,6 +177,7 @@ public class TileMap
         else if (dir.equals("up"))
         {            
             moveAll(0, 1);
+            state.changeShift(0, -1);
             
             for (int i = 0; i < mapWidth; i++)
             {
@@ -188,6 +200,7 @@ public class TileMap
         else if (dir.equals("left"))
         {
             moveAll(1, 0);
+            state.changeShift(-1, 0);
             
             for (int i = 0; i < mapHeight; i++)
             {
@@ -203,7 +216,7 @@ public class TileMap
     
     public static void deleteRow(String dir)
     {
-        UndoState state = new UndoState(tileList, mapWidth, mapHeight);
+        UndoState state = new UndoState(new ArrayList<>(tileList), mapWidth, mapHeight);
         
         if (dir.equals("down"))
         {
@@ -216,6 +229,7 @@ public class TileMap
         else if (dir.equals("up"))
         {            
             moveAll(0, -1);
+            state.changeShift(0, 1);
             
             for (int i = mapWidth - 1; i >= 0; i--)
             {
@@ -234,6 +248,7 @@ public class TileMap
         else if (dir.equals("left"))
         {
             moveAll(-1, 0);
+            state.changeShift(1, 0);
             
             for (int i = mapWidth * (mapHeight - 1); i >= 0; i -= mapWidth)
             {
@@ -258,9 +273,11 @@ public class TileMap
     
     public static void useUndo(UndoState undo)
     {
-        tileList = undo.state;
+        tileList = getTileListCopy(undo.state);
         mapWidth = undo.width;
         mapHeight = undo.height;
+        
+        moveAll(undo.shift[0], undo.shift[1]);
     }
     
     public static UndoState getCurrentState()

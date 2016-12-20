@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.TextInputListener;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -84,6 +85,19 @@ public class TileSelector
             editRow.add(retractButton).prefWidth(80).prefHeight(80);
             editRow.row();
         }
+        
+        TileButton wall = new TileButton(skin, new TextureRegion(new Texture("images/wall.png")));
+        wall.addListener(new ClickListener()
+        {
+            @Override
+            public void clicked(InputEvent event, float x, float y)
+            {
+                wall.setColor(wall.getColor().toString().equals("ffd700ff") ? Color.WHITE : Color.GOLD); // ffd700ff is gold rgb
+                InputHandler.toggleWallMode();
+            }
+        });
+        editRow.add(wall).prefWidth(80).prefHeight(80);
+        editRow.row();
 		
 		TileButton undo = new TileButton(skin, new TextureRegion(new Texture("images/undo.png")));
         undo.addListener(new ClickListener()

@@ -9,6 +9,7 @@ import woohoo.utils.gameworld.GameRenderer;
 public class InputHandler implements InputProcessor
 {        
     private static Vector2 mouseDown;
+    private static boolean wallMode;
     
     public InputHandler()
     {
@@ -45,10 +46,19 @@ public class InputHandler implements InputProcessor
     {
         return Gdx.input.isKeyPressed(keycode);
     }
+    
+    public static void toggleWallMode()
+    {
+        wallMode = !wallMode;
+    }
 
     @Override
     public boolean keyUp(int keycode)
     {
+        for (UndoState state : UndoManager.getStates())
+        {
+            System.out.println(state.shift[0] + " " + state.shift[1]);
+        }
         return false;
     }
 
@@ -65,7 +75,15 @@ public class InputHandler implements InputProcessor
         int dispY = (int)(GameRenderer.getCamera().position.y - Gdx.graphics.getHeight() / 2);
         
         TileMap.deselectAll();
-        TileMap.replaceAll(TileMap.selectTiles((int)mouseDown.x, (int)mouseDown.y, screenX + dispX, screenY + dispY));
+                
+        if (wallMode)
+        {
+            TileMap.toggleWall(TileMap.selectTiles((int)mouseDown.x, (int)mouseDown.y, screenX + dispX, screenY + dispY));
+        }
+        else
+        {
+            TileMap.replaceAll(TileMap.selectTiles((int)mouseDown.x, (int)mouseDown.y, screenX + dispX, screenY + dispY));
+        }
         return false;
     }
 

@@ -1,7 +1,7 @@
 package woohoo.utils.gameobjects;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.GridPoint2;
@@ -15,6 +15,7 @@ public class Tile
     private int functionID;
     private int rotation = 0;
     private Color color = Color.WHITE;
+    private boolean isWall;
 	
 	/* Dimensions of tiles in-game */
     public static final int G_TILE_WIDTH = 64;
@@ -23,6 +24,8 @@ public class Tile
 	/* Dimensions of tiles on the spritesheet */
     public static final int T_TILE_WIDTH = 16;
     public static final int T_TILE_HEIGHT = 16;
+    
+    public static final Texture wallOutline = new Texture("images/wallOutline.png");
     
     public Tile(int tileID, int function, int initX, int initY)
     {
@@ -37,6 +40,7 @@ public class Tile
         
         tile = new TextureRegion(GameRenderer.tileSet, tileX, tileY, T_TILE_WIDTH, T_TILE_HEIGHT);
 		rotation = 90 * functionID / 16;
+        isWall = functionID >= 4 && functionID <= 7;
 		
 		tile.flip(false, true);
     }
@@ -53,7 +57,8 @@ public class Tile
         position.y = t.position.y;       
         
         tile = new TextureRegion(GameRenderer.tileSet, tileX, tileY, T_TILE_WIDTH, T_TILE_HEIGHT);
-		rotation = t.rotation;
+		rotation = 90 * functionID / 16;
+        isWall = functionID >= 4 && functionID <= 7;
 		
 		tile.flip(false, true);
     }
@@ -66,6 +71,8 @@ public class Tile
                      G_TILE_WIDTH, G_TILE_HEIGHT,                                   // Size
                      1, 1,                                                          // Scale
                      rotation);                                                     // Rotation
+        if (isWall)
+            batcher.draw(new TextureRegion(wallOutline), position.x * G_TILE_WIDTH, position.y * G_TILE_HEIGHT);
         batcher.setColor(Color.WHITE);
     }
 	
@@ -115,5 +122,10 @@ public class Tile
     {
         position.x += deltaX;
         position.y += deltaY;
+    }
+    
+    public void toggleWall()
+    {
+        isWall = !isWall;
     }
 }
