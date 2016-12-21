@@ -31,7 +31,7 @@ public class TileSelector
     private static Texture left = new Texture("images/leftbutton.png");
     private static Texture right = new Texture("images/rightbutton.png");
     
-    private static final int MAX_ID = 16;
+    private static final int MAX_ID = 19;
     
     public TileSelector()
     {

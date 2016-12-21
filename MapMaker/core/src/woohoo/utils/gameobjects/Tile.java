@@ -39,7 +39,7 @@ public class Tile
         position.y = initY;
         
         tile = new TextureRegion(GameRenderer.tileSet, tileX, tileY, T_TILE_WIDTH, T_TILE_HEIGHT);
-		rotation = 90 * functionID / 16;
+		rotation = 90 * (functionID / 4);
         isWall = functionID >= 4 && functionID <= 7;
 		
 		tile.flip(false, true);
@@ -57,8 +57,8 @@ public class Tile
         position.y = t.position.y;       
         
         tile = new TextureRegion(GameRenderer.tileSet, tileX, tileY, T_TILE_WIDTH, T_TILE_HEIGHT);
-		rotation = 90 * functionID / 16;
-        isWall = functionID >= 4 && functionID <= 7;
+		rotation = t.rotation;
+        isWall = t.isWall;
 		
 		tile.flip(false, true);
     }
@@ -78,10 +78,13 @@ public class Tile
 	
 	public String getCode()
 	{
-		String first = Integer.toString(Math.abs(rotation / 90) % 4, 16);
+		String function = Integer.toString(functionID, 16);
 		String texture = Integer.toString(textureID, 16);
 		
-		return first + "0" + (texture.length() == 1 ? "0" : "") + texture;
+		function = (function.length() == 1 ? "0" + function : function);
+		texture = (texture.length() == 1 ? "0" + texture : texture);
+		
+		return function + texture;
 	}
     
     public void highlight(boolean highlight)
@@ -111,6 +114,7 @@ public class Tile
     public void setRotation(int rot)
     {
         rotation = rot;
+		functionID = functionID / 4 * 4 + Math.abs((rot / 90) % 4);
     }
     
     /*
@@ -126,6 +130,15 @@ public class Tile
     
     public void toggleWall()
     {
-        isWall = !isWall;
+		isWall = !isWall;
+		
+		if (isWall)
+		{
+			functionID += 4;
+		}
+		else
+		{
+			functionID -= 4;
+		}
     }
 }

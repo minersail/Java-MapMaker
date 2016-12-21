@@ -55,10 +55,6 @@ public class InputHandler implements InputProcessor
     @Override
     public boolean keyUp(int keycode)
     {
-        for (UndoState state : UndoManager.getStates())
-        {
-            System.out.println(state.shift[0] + " " + state.shift[1]);
-        }
         return false;
     }
 
