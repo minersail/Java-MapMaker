@@ -1,5 +1,6 @@
 package woohoo.utils.gameobjects;
 
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.FileTextureData;
@@ -9,13 +10,11 @@ import woohoo.utils.gameworld.GameRenderer;
 
 public class TileButton extends Button
 {
-    private TextureRegion sprite;
-    
-    private int spriteRotation = 0;
+    protected TextureRegion sprite;
     
     public TileButton()
     {
-        sprite = new TextureRegion(GameRenderer.tileSet);
+        sprite = new TextureRegion(GameRenderer.tileSet1);
     }
     
     public TileButton(Skin skin, TextureRegion spr)
@@ -28,6 +27,11 @@ public class TileButton extends Button
     {
         return sprite;
     }
+	
+	public void switchTexture(Texture text, int tile)
+	{
+		sprite = new TextureRegion(text, tile * 16, 0, 16, 16);
+	}
     
     public String getImagePath()
     {
@@ -43,25 +47,20 @@ public class TileButton extends Button
     {
         sprite.setRegion((ID % 16) * 16, (ID / 16) * 16, sprite.getRegionWidth(), sprite.getRegionHeight());
     }
-    
-    public int getSpriteRotation()
-    {
-        return spriteRotation;
-    }
-    
-    public void setSpriteRotation(int newRotation)
-    {
-        spriteRotation = newRotation;
-    }
+	
+	protected void drawBackground(Batch batcher, float parentAlpha)
+	{
+        super.draw(batcher, parentAlpha);		
+	}
         
     @Override
     public void draw(Batch batcher, float parentAlpha)
     {
-        super.draw(batcher, parentAlpha);
+		drawBackground(batcher, parentAlpha);
         batcher.draw(sprite, getX() + 5, getY() + 5,                    // Position
                      (getWidth() - 10) / 2, (getHeight() - 10) / 2,     // Origin
                      getWidth() - 10, getHeight() - 10,                 // Size
                      1, 1,                                              // Scale
-                     getSpriteRotation());                              // Rotation
+                     0);												// Rotation
     }
 }

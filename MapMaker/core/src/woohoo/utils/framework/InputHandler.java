@@ -10,6 +10,7 @@ public class InputHandler implements InputProcessor
 {        
     private static Vector2 mouseDown;
     private static boolean wallMode;
+	private static boolean decorationMode;
     
     public InputHandler()
     {
@@ -51,6 +52,16 @@ public class InputHandler implements InputProcessor
     {
         wallMode = !wallMode;
     }
+    
+    public static void toggleDecorationMode()
+    {
+        decorationMode = !decorationMode;
+    }
+	
+	public static boolean getDecorationMode()
+	{
+		return decorationMode;
+	}
 
     @Override
     public boolean keyUp(int keycode)
@@ -78,7 +89,7 @@ public class InputHandler implements InputProcessor
         }
         else
         {
-            TileMap.replaceAll(TileMap.selectTiles((int)mouseDown.x, (int)mouseDown.y, screenX + dispX, screenY + dispY));
+            TileMap.replaceAll(TileMap.selectTiles((int)mouseDown.x, (int)mouseDown.y, screenX + dispX, screenY + dispY), decorationMode);
         }
         return false;
     }

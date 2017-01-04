@@ -126,14 +126,14 @@ public class TileMap
         }
     }
     
-    public static void replaceAll(List<Tile> tiles)
-    {
+    public static void replaceAll(List<Tile> tiles, boolean isDecoration)
+    {	
         UndoManager.add(new UndoState(tileList, mapWidth, mapHeight));
         
         for (Tile tile : tiles)
         {
-            tile.replaceTexture(TileSelector.getCurrentID());
-            tile.setRotation(TileSelector.getCurrentRotation());
+            tile.replaceTexture(TileSelector.getCurrentID(), isDecoration);
+            tile.setRotation(TileSelector.getCurrentRotation(isDecoration), isDecoration);
         }
     }
     
@@ -152,7 +152,7 @@ public class TileMap
     
     e.g. move(1, 1) instead of move(64, 64)
     */
-    public static void moveAll(int deltaX, int deltaY)
+    private static void moveAll(int deltaX, int deltaY)
     {
         for (Tile tile : tileList)
         {
@@ -169,6 +169,7 @@ public class TileMap
             for (int i = 0; i < mapWidth; i++)
             {
                 Tile t = new Tile(TileSelector.getCurrentID(), TileSelector.getCurrentRotation() / 90 * 16, i, mapHeight);
+				t.setRotation(TileSelector.getCurrentRotation(false), false);
                 tileList.add(t);
             }
             mapHeight++;
@@ -180,7 +181,7 @@ public class TileMap
             for (int i = 0; i < mapWidth; i++)
             {
                 Tile t = new Tile(TileSelector.getCurrentID(), TileSelector.getCurrentRotation() / 90 * 16, i, 0);
-				t.setRotation(TileSelector.getCurrentRotation());
+				t.setRotation(TileSelector.getCurrentRotation(), false);
                 tileList.add(i, t);
             }
             mapHeight++;
@@ -190,7 +191,7 @@ public class TileMap
             for (int i = 0; i < mapHeight; i++)
             {
                 Tile t = new Tile(TileSelector.getCurrentID(), TileSelector.getCurrentRotation() / 90 * 16, mapWidth, i);
-				t.setRotation(TileSelector.getCurrentRotation());
+				t.setRotation(TileSelector.getCurrentRotation(), false);
                 tileList.add(mapWidth + i * (mapWidth + 1), t);
             }
             mapWidth++;
@@ -202,7 +203,7 @@ public class TileMap
             for (int i = 0; i < mapHeight; i++)
             {
                 Tile t = new Tile(TileSelector.getCurrentID(), TileSelector.getCurrentRotation() / 90 * 16, 0, i);
-				t.setRotation(TileSelector.getCurrentRotation());
+				t.setRotation(TileSelector.getCurrentRotation(), false);
                 tileList.add(i * (mapWidth + 1), t);
             }
             mapWidth++;

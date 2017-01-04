@@ -17,7 +17,8 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import java.util.List;
 import woohoo.utils.framework.InputHandler;
 import woohoo.utils.framework.UndoManager;
-import static woohoo.utils.gameworld.GameRenderer.tileSet;
+import static woohoo.utils.gameworld.GameRenderer.tileSet1;
+import static woohoo.utils.gameworld.GameRenderer.tileSet2;
 
 public class TileSelector
 {    
@@ -32,6 +33,7 @@ public class TileSelector
     private static Texture right = new Texture("images/rightbutton.png");
     
     private static final int MAX_ID = 19;
+	private static int savedID = 0;
     
     public TileSelector()
     {
@@ -43,13 +45,16 @@ public class TileSelector
         //======================================================================
         //======================================================================
         
-        TileButton current = new TileButton(skin, new TextureRegion(tileSet, 0, 0, 16, 16));
+        CurrentButton current = new CurrentButton(skin, new TextureRegion(tileSet1, 0, 0, 16, 16));
         current.addListener(new ClickListener()
         {
             @Override
             public void clicked(InputEvent event, float x, float y)
             {
-                current.setSpriteRotation(current.getSpriteRotation() + 90);
+				if (InputHandler.getDecorationMode())
+					current.setDecorationRotation(current.getDecorationRotation() + 90);					
+				else
+					current.setSpriteRotation(current.getSpriteRotation() + 90);
             }
         });
         editRow.add(current).prefWidth(80).prefHeight(80);
@@ -99,6 +104,21 @@ public class TileSelector
         editRow.add(wall).prefWidth(80).prefHeight(80);
         editRow.row();
 		
+		TileButton layer = new TileButton(skin, new TextureRegion(new Texture("images/switchlayer.png")));
+        layer.addListener(new ClickListener()
+        {
+            @Override
+            public void clicked(InputEvent event, float x, float y)
+            {
+				layer.setColor(layer.getColor().toString().equals("ffd700ff") ? Color.WHITE : Color.GOLD); // ffd700ff is gold rgb
+				switchTexture(layer.getColor().toString().equals("ffd700ff") ? tileSet2 : tileSet1);
+				InputHandler.toggleDecorationMode();
+				current.toggleDecorationMode();
+            }
+        });
+        editRow.add(layer).prefWidth(80).prefHeight(80);
+        editRow.row();
+		
 		TileButton undo = new TileButton(skin, new TextureRegion(new Texture("images/undo.png")));
         undo.addListener(new ClickListener()
         {
@@ -138,16 +158,7 @@ public class TileSelector
 									if (text.toLowerCase().equals("yes"))
 									{
 										file.delete();
-										
-										for (int i = 0; i < codes.size(); i++)
-										{
-											file.writeString(codes.get(i), true);
-
-											if ((i + 1) % TileMap.mapWidth == 0)
-												file.writeString(System.getProperty("line.separator"), true);
-											else if (i <= codes.size() - 1)
-												file.writeString(" ", true);
-										}
+										writeCodes(codes, file);
 									}
 								}
 								
@@ -156,15 +167,7 @@ public class TileSelector
 						}
 						else
 						{						
-							for (int i = 0; i < codes.size(); i++)
-							{
-								file.writeString(codes.get(i), true);
-
-								if ((i + 1) % TileMap.mapWidth == 0)
-									file.writeString(System.getProperty("line.separator"), true);
-								else if (i <= codes.size() - 1)
-									file.writeString(" ", true);
-							}
+							writeCodes(codes, file);
 						}
 					}
 
@@ -199,7 +202,7 @@ public class TileSelector
 
         for (int i = 0; i < 7; i++)
         {
-            TileButton button = new TileButton(skin, new TextureRegion(tileSet, i * 16, 0, 16, 16));
+            TileButton button = new TileButton(skin, new TextureRegion(tileSet1, i * 16, 0, 16, 16));
 
             button.addListener(new ClickListener()
             {
@@ -276,7 +279,7 @@ public class TileSelector
         {
             TileButton button = (TileButton)cell.getActor();
             
-            if (button.getImagePath().equals("images/tileset.png"))
+            if (!button.getImagePath().equals("images/leftbutton.png") && !button.getImagePath().equals("images/rightbutton.png"))
             {
                 if (forward && firstID + selectRow.getCells().size - 2 < MAX_ID)
                 {
@@ -289,6 +292,27 @@ public class TileSelector
             }
         }
     }
+	
+	public void switchTexture(Texture text)
+	{		
+		int i = 0;
+		for (Cell cell : selectRow.getCells())
+        {
+            TileButton button = (TileButton)cell.getActor();
+            
+			if (!button.getImagePath().equals("images/leftbutton.png") && !button.getImagePath().equals("images/rightbutton.png"))
+			{
+				button.switchTexture(text, i);
+				i++;
+			}
+        }
+		
+		TileButton current = (TileButton)editRow.getCells().first().getActor();
+		
+		int temp = savedID;
+		savedID = getCurrentID();
+		current.switchTexture(text, temp);
+	}
     
     public static int getCurrentID()
     {
@@ -296,11 +320,34 @@ public class TileSelector
         
         return current.getTextureID();
     }    
-    
-    public static int getCurrentRotation()
+	
+	public static int getCurrentRotation()
     {
-        TileButton current = (TileButton)editRow.getCells().first().getActor();
-        
-        return 360 - (int)current.getSpriteRotation(); // 360 is because UI is not y-flipped and so rotates the other direction
+        CurrentButton current = (CurrentButton)editRow.getCells().first().getActor();
+        // 360 is because UI is not y-flipped and so rotates the other direction
+        return 360 - (int)current.getSpriteRotation();
     }
+    
+    public static int getCurrentRotation(boolean decoration)
+    {
+        CurrentButton current = (CurrentButton)editRow.getCells().first().getActor();
+        // 360 is because UI is not y-flipped and so rotates the other direction
+        return decoration ? 360 - (int)current.getDecorationRotation() : 360 - (int)current.getSpriteRotation();
+    }
+	
+	private void writeCodes(List<String> codes, FileHandle file)
+	{
+		for (int i = 0; i < codes.size(); i++)
+		{
+			file.writeString(codes.get(i), true);
+
+			if ((i + 1) % TileMap.mapWidth == 0)
+			{
+				file.writeString(System.getProperty("line.separator"), true);
+			} else if (i <= codes.size() - 1)
+			{
+				file.writeString(" ", true);
+			}
+		}
+	}
 }

@@ -10,11 +10,14 @@ import woohoo.utils.gameworld.GameRenderer;
 public class Tile
 {
     private GridPoint2 position = new GridPoint2();
-    private TextureRegion tile;
-    private int textureID;
-    private int functionID;
-    private int rotation = 0;
-    private Color color = Color.WHITE;
+    private TextureRegion tile; // Base layer
+	private TextureRegion decoration; // Decorative layer, starts as null
+    private int textureID; // 0 < textureID < 256, two-byte storage for tile's texture
+    private int functionID; // 0 < functionID < 256, two-byte storage for tile's function
+	private int decorationID; // 0 < decorationID < 256, two-byte storage for decoration's texture
+    private int rotation = 0; // must be in multiples of 90
+	private int decorationRotation = 0; // must be in multiples of 90
+    private Color color = Color.WHITE; // Only for editor's purpose, does not show up in function/texture ids
     private boolean isWall;
 	
 	/* Dimensions of tiles in-game */
@@ -29,7 +32,7 @@ public class Tile
     
     public Tile(int tileID, int function, int initX, int initY)
     {
-		int columns = GameRenderer.tileSet.getWidth() / T_TILE_WIDTH;
+		int columns = GameRenderer.tileSet1.getWidth() / T_TILE_WIDTH;
 		int tileX = (tileID % columns) * T_TILE_WIDTH;
 		int tileY = (tileID / columns) * T_TILE_HEIGHT;
 		
@@ -38,27 +41,40 @@ public class Tile
         position.x = initX;
         position.y = initY;
         
-        tile = new TextureRegion(GameRenderer.tileSet, tileX, tileY, T_TILE_WIDTH, T_TILE_HEIGHT);
+        tile = new TextureRegion(GameRenderer.tileSet1, tileX, tileY, T_TILE_WIDTH, T_TILE_HEIGHT);
 		rotation = 90 * (functionID / 4);
         isWall = functionID >= 4 && functionID <= 7;
 		
 		tile.flip(false, true);
     }
     
+	// Critical copy constructor for storing undo states
     public Tile(Tile t)
     {
-		int columns = GameRenderer.tileSet.getWidth() / T_TILE_WIDTH;
+		int columns = GameRenderer.tileSet1.getWidth() / T_TILE_WIDTH;
 		int tileX = (t.textureID % columns) * T_TILE_WIDTH;
 		int tileY = (t.textureID / columns) * T_TILE_HEIGHT;
+		
+		int columns2 = GameRenderer.tileSet2.getWidth() / T_TILE_WIDTH;
+		int tileX2 = (t.decorationID % columns2) * T_TILE_WIDTH;
+		int tileY2 = (t.decorationID / columns2) * T_TILE_HEIGHT;
         
         textureID = t.textureID;
         functionID = t.functionID;
+		decorationID = t.decorationID;
         position.x = t.position.x;
         position.y = t.position.y;       
         
-        tile = new TextureRegion(GameRenderer.tileSet, tileX, tileY, T_TILE_WIDTH, T_TILE_HEIGHT);
+        tile = new TextureRegion(GameRenderer.tileSet1, tileX, tileY, T_TILE_WIDTH, T_TILE_HEIGHT);
 		rotation = t.rotation;
+		decorationRotation = t.decorationRotation;
         isWall = t.isWall;
+		
+		if (t.decoration != null)
+		{
+			decoration = new TextureRegion(GameRenderer.tileSet2, tileX2, tileY2, T_TILE_WIDTH, T_TILE_HEIGHT);
+			decoration.flip(false, true);
+		}
 		
 		tile.flip(false, true);
     }
@@ -71,6 +87,14 @@ public class Tile
                      G_TILE_WIDTH, G_TILE_HEIGHT,                                   // Size
                      1, 1,                                                          // Scale
                      rotation);                                                     // Rotation
+		
+		if (decoration != null)
+			batcher.draw(decoration, position.x * G_TILE_WIDTH, position.y * G_TILE_HEIGHT,   // Position
+                     G_TILE_WIDTH / 2, G_TILE_HEIGHT / 2,                           // Origin
+                     G_TILE_WIDTH, G_TILE_HEIGHT,                                   // Size
+                     1, 1,                                                          // Scale
+                     decorationRotation);                                           // Rotation
+		
         if (isWall)
             batcher.draw(new TextureRegion(wallOutline), position.x * G_TILE_WIDTH, position.y * G_TILE_HEIGHT);
         batcher.setColor(Color.WHITE);
@@ -86,6 +110,15 @@ public class Tile
 		
 		return function + texture;
 	}
+	
+	public String getDecorationCode()
+	{
+		String dec = Integer.toString(decorationID, 16);
+		
+		int rot = (decorationRotation / 90) % 4;
+		
+		return "0" + rot + dec;
+	}
     
     public void highlight(boolean highlight)
     {
@@ -99,22 +132,48 @@ public class Tile
         }
     }
     
-    public void replaceTexture(int tileID)
-    {        
-		int columns = GameRenderer.tileSet.getWidth() / T_TILE_WIDTH;
-		int tileX = (tileID % columns) * T_TILE_WIDTH;
-		int tileY = (tileID / columns) * T_TILE_HEIGHT;        
-        
-        tile.setRegion(tileX, tileY, tile.getRegionWidth(), tile.getRegionHeight());
-        tile.flip(false, true);
-		
-		textureID = tileID;
+    public void replaceTexture(int tileID, boolean isDecoration)
+    {    
+		if (isDecoration)
+		{
+			int columns = GameRenderer.tileSet2.getWidth() / T_TILE_WIDTH;
+			int tileX = (tileID % columns) * T_TILE_WIDTH;
+			int tileY = (tileID / columns) * T_TILE_HEIGHT;        
+
+			// Lazy initialization
+			if (decoration == null) decoration = new TextureRegion(GameRenderer.tileSet2, tileX, tileY, T_TILE_WIDTH, T_TILE_HEIGHT);
+			else decoration.setRegion(tileX, tileY, decoration.getRegionWidth(), decoration.getRegionHeight());
+			
+			decoration.flip(false, true);
+
+			decorationID = tileID;
+		}
+		else
+		{
+			int columns = GameRenderer.tileSet1.getWidth() / T_TILE_WIDTH;
+			int tileX = (tileID % columns) * T_TILE_WIDTH;
+			int tileY = (tileID / columns) * T_TILE_HEIGHT;        
+
+			tile.setRegion(tileX, tileY, tile.getRegionWidth(), tile.getRegionHeight());
+			tile.flip(false, true);
+
+			textureID = tileID;
+		}
     }
     
-    public void setRotation(int rot)
+    public void setRotation(int rot, boolean isDecoration)
     {
-        rotation = rot;
-		functionID = functionID / 4 * 4 + Math.abs((rot / 90) % 4);
+		while (rot < 0) rot += 360;
+		
+		if (isDecoration)
+		{
+			decorationRotation = rot;
+		}
+		else
+		{	
+			rotation = rot;		
+			functionID = functionID / 4 * 4 + (rot / 90) % 4;
+		}
     }
     
     /*

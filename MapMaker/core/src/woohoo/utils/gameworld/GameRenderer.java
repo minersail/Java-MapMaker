@@ -11,7 +11,8 @@ import woohoo.utils.gameobjects.TileSelector;
 
 public class GameRenderer
 {    
-    public static Texture tileSet = new Texture("images/tileset.png");
+    public static Texture tileSet1 = new Texture("images/tileset1.png");
+	public static Texture tileSet2 = new Texture("images/tileset2.png");
 	
     static OrthographicCamera cam;
     static SpriteBatch batcher = new SpriteBatch();
