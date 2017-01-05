@@ -30,19 +30,31 @@ public class Tile
     
     public static final Texture wallOutline = new Texture("images/wallOutline.png");
     
-    public Tile(int tileID, int function, int initX, int initY)
+    public Tile(int decor, int tileID, int function, int initX, int initY)
     {
+		decorationID = decor % 256;
+		
 		int columns = GameRenderer.tileSet1.getWidth() / T_TILE_WIDTH;
 		int tileX = (tileID % columns) * T_TILE_WIDTH;
 		int tileY = (tileID / columns) * T_TILE_HEIGHT;
 		
+		int columns2 = GameRenderer.tileSet2.getWidth() / T_TILE_WIDTH;
+		int tileX2 = (decorationID % columns2) * T_TILE_WIDTH;
+		int tileY2 = (decorationID / columns2) * T_TILE_HEIGHT;
+		
         textureID = tileID;
         functionID = function;
+		decorationRotation = (decor / 256) * 90;
         position.x = initX;
         position.y = initY;
         
         tile = new TextureRegion(GameRenderer.tileSet1, tileX, tileY, T_TILE_WIDTH, T_TILE_HEIGHT);
-		rotation = 90 * (functionID / 4);
+		if (decorationID != 0)
+		{
+			decoration = new TextureRegion(GameRenderer.tileSet2, tileX2, tileY2, T_TILE_WIDTH, T_TILE_HEIGHT);
+			decoration.flip(false, true);
+		}
+		rotation = 90 * (functionID % 4);
         isWall = functionID >= 4 && functionID <= 7;
 		
 		tile.flip(false, true);
@@ -114,6 +126,7 @@ public class Tile
 	public String getDecorationCode()
 	{
 		String dec = Integer.toString(decorationID, 16);
+		dec = (dec.length() == 1 ? "0" + dec : dec);
 		
 		int rot = (decorationRotation / 90) % 4;
 		

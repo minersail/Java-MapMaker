@@ -16,11 +16,11 @@ public class TileMap
 	
 	public TileMap()
 	{
-		FileHandle mapHandle = Gdx.files.internal("maps/map1.txt");
+		FileHandle mapHandle = Gdx.files.internal("maps/trees3.txt");
 		String map = mapHandle.readString();
 		
 		String[] rows = map.split("\n");
-		mapWidth = rows[0].length() / 5;
+		mapWidth = rows[0].length() / 9;
 		mapHeight = rows.length;
 		
 		int i = 0;
@@ -30,10 +30,11 @@ public class TileMap
 			String[] tiles = row.split(" ");
 			for (String tile : tiles)
 			{
-				int function = Integer.parseInt(tile.substring(0, 2), 16);
-				int texture = Integer.parseInt(tile.substring(2, 4), 16);
+				int decoration = Integer.parseInt(tile.substring(1, 4), 16);
+				int function = Integer.parseInt(tile.substring(4, 6), 16);
+				int texture = Integer.parseInt(tile.substring(6, 8), 16);
 								
-				Tile t = new Tile(texture, function, j, i);
+				Tile t = new Tile(decoration, texture, function, j, i);
 				tileList.add(t);
 				j++;
 			}
@@ -168,7 +169,7 @@ public class TileMap
         {
             for (int i = 0; i < mapWidth; i++)
             {
-                Tile t = new Tile(TileSelector.getCurrentID(), TileSelector.getCurrentRotation() / 90 * 16, i, mapHeight);
+                Tile t = new Tile(0, TileSelector.getCurrentID(), TileSelector.getCurrentRotation() / 90 * 16, i, mapHeight);
 				t.setRotation(TileSelector.getCurrentRotation(false), false);
                 tileList.add(t);
             }
@@ -180,7 +181,7 @@ public class TileMap
             
             for (int i = 0; i < mapWidth; i++)
             {
-                Tile t = new Tile(TileSelector.getCurrentID(), TileSelector.getCurrentRotation() / 90 * 16, i, 0);
+                Tile t = new Tile(0, TileSelector.getCurrentID(), TileSelector.getCurrentRotation() / 90 * 16, i, 0);
 				t.setRotation(TileSelector.getCurrentRotation(), false);
                 tileList.add(i, t);
             }
@@ -190,7 +191,7 @@ public class TileMap
         {
             for (int i = 0; i < mapHeight; i++)
             {
-                Tile t = new Tile(TileSelector.getCurrentID(), TileSelector.getCurrentRotation() / 90 * 16, mapWidth, i);
+                Tile t = new Tile(0, TileSelector.getCurrentID(), TileSelector.getCurrentRotation() / 90 * 16, mapWidth, i);
 				t.setRotation(TileSelector.getCurrentRotation(), false);
                 tileList.add(mapWidth + i * (mapWidth + 1), t);
             }
@@ -202,7 +203,7 @@ public class TileMap
             
             for (int i = 0; i < mapHeight; i++)
             {
-                Tile t = new Tile(TileSelector.getCurrentID(), TileSelector.getCurrentRotation() / 90 * 16, 0, i);
+                Tile t = new Tile(0, TileSelector.getCurrentID(), TileSelector.getCurrentRotation() / 90 * 16, 0, i);
 				t.setRotation(TileSelector.getCurrentRotation(), false);
                 tileList.add(i * (mapWidth + 1), t);
             }
@@ -258,7 +259,7 @@ public class TileMap
 
         for (Tile tile : tileList)
         {
-            codes.add(tile.getCode());
+            codes.add(tile.getDecorationCode() + tile.getCode());
         }		
         return codes;
     }
