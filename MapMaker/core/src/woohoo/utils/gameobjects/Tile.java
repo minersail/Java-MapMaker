@@ -176,7 +176,7 @@ public class Tile
     
     public void setRotation(int rot, boolean isDecoration)
     {
-		while (rot < 0) rot += 360;
+		while (rot < 0) rot += 360; // Ensures positive rotation
 		
 		if (isDecoration)
 		{
@@ -185,7 +185,8 @@ public class Tile
 		else
 		{	
 			rotation = rot;		
-			functionID = functionID / 4 * 4 + (rot / 90) % 4;
+			functionID = functionID / 4 * 4; // Handy integer division trick to set functionID to closest lower multiple of four
+			functionID += (rot / 90) % 4;
 		}
     }
     

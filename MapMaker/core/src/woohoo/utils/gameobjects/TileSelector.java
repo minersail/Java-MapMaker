@@ -325,7 +325,11 @@ public class TileSelector
     {
         CurrentButton current = (CurrentButton)editRow.getCells().first().getActor();
         // 360 is because UI is not y-flipped and so rotates the other direction
-        return 360 - (int)current.getSpriteRotation();
+        int rotation = 360 - (int)current.getSpriteRotation();
+		
+		while (rotation < 0) rotation += 360;
+		
+		return rotation;
     }
     
     public static int getCurrentRotation(boolean decoration)
