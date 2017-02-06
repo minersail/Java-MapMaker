@@ -1,5 +1,6 @@
 package woohoo.utils.gameobjects;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -28,7 +29,7 @@ public class Tile
     public static final int T_TILE_WIDTH = 16;
     public static final int T_TILE_HEIGHT = 16;
     
-    public static final Texture wallOutline = new Texture("images/wallOutline.png");
+    public static final Texture wallOutline = new Texture(Gdx.files.internal("images/wallOutline.png"));
     
     public Tile(int decor, int tileID, int function, int initX, int initY)
     {
