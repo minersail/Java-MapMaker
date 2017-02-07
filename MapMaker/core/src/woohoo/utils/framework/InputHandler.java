@@ -3,6 +3,7 @@ package woohoo.utils.framework;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.math.Vector2;
+import woohoo.utils.gameobjects.Tile;
 import woohoo.utils.gameobjects.TileMap;
 import woohoo.utils.gameworld.GameRenderer;
 
@@ -23,7 +24,9 @@ public class InputHandler implements InputProcessor
         int dispY = (int)(GameRenderer.getCamera().position.y - Gdx.graphics.getHeight() / 2);
         
         mouseDown = new Vector2(screenX + dispX, screenY + dispY);
-        TileMap.selectTile(screenX + dispX, screenY + dispY).highlight(true);
+        Tile tile = TileMap.selectTile(screenX + dispX, screenY + dispY);
+		if (tile != null)
+			tile.highlight(true);
         return false;
     }
 

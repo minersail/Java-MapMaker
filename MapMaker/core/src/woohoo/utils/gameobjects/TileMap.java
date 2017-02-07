@@ -66,6 +66,8 @@ public class TileMap
         y /= Tile.G_TILE_HEIGHT;
         
         int location = y * mapWidth + x;
+		
+		if (location >= tileList.toArray().length) return null;
         
         Tile clicked = (Tile)tileList.toArray()[location];
         return clicked;
@@ -112,7 +114,8 @@ public class TileMap
         List<Tile> tiles = new ArrayList<>();
         for (Integer i : locations)
         {
-            tiles.add(tileList.get(i));
+			if (i < tileList.size())
+				tiles.add(tileList.get(i));
         }
         
         return tiles;
@@ -289,7 +292,7 @@ public class TileMap
         
         for (Tile tile : list)
         {
-            Tile newTile = new Tile(tile);
+            Tile newTile = new Tile(gR, tile);
             newList.add(newTile);
         }
         

@@ -65,8 +65,10 @@ public class Tile
     }
     
 	// Critical copy constructor for storing undo states
-    public Tile(Tile t)
+    public Tile(GameRenderer renderer, Tile t)
     {
+		gR = renderer;
+		
 		int columns = gR.tileSet1.getWidth() / T_TILE_WIDTH;
 		int tileX = (t.textureID % columns) * T_TILE_WIDTH;
 		int tileY = (t.textureID / columns) * T_TILE_HEIGHT;
