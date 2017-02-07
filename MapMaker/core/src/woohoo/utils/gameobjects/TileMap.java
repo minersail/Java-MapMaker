@@ -1,22 +1,29 @@
 package woohoo.utils.gameobjects;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import java.util.ArrayList;
 import java.util.List;
 import woohoo.utils.framework.UndoManager;
 import woohoo.utils.framework.UndoState;
+import woohoo.utils.gameworld.GameRenderer;
 
 public class TileMap
 {
+	private static GameRenderer gR;
     public static int mapHeight;
     public static int mapWidth;    
 	private static List<Tile> tileList = new ArrayList<>();
 	
-	public TileMap()
+	public TileMap(GameRenderer renderer)
 	{
-		FileHandle mapHandle = Gdx.files.internal("maps/sandbox.txt");
+		gR = renderer;
+		
+		FileHandle path = new FileHandle("config.txt");
+		String[] paths = path.readString().split("\n");
+		
+		// IDK WHY BUT THERE'S A RANDOM ASS NEWLINE CHARACTER I CAN'T GET RID OF
+		FileHandle mapHandle = new FileHandle(paths[0].substring(0, paths[0].length() - 1));
 		String map = mapHandle.readString();
 		
 		String[] rows = map.split("\n");
@@ -34,7 +41,7 @@ public class TileMap
 				int function = Integer.parseInt(tile.substring(4, 6), 16);
 				int texture = Integer.parseInt(tile.substring(6, 8), 16);
 								
-				Tile t = new Tile(decoration, texture, function, j, i);
+				Tile t = new Tile(renderer, decoration, texture, function, j, i);
 				tileList.add(t);
 				j++;
 			}
@@ -169,7 +176,7 @@ public class TileMap
         {
             for (int i = 0; i < mapWidth; i++)
             {
-                Tile t = new Tile(0, TileSelector.getCurrentID(), TileSelector.getCurrentRotation() / 90 % 4, i, mapHeight);
+                Tile t = new Tile(gR, 0, TileSelector.getCurrentID(), TileSelector.getCurrentRotation() / 90 % 4, i, mapHeight);
 				t.setRotation(TileSelector.getCurrentRotation(false), false);
                 tileList.add(t);
             }
@@ -181,7 +188,7 @@ public class TileMap
             
             for (int i = 0; i < mapWidth; i++)
             {
-                Tile t = new Tile(0, TileSelector.getCurrentID(), TileSelector.getCurrentRotation() / 90 % 4, i, 0);
+                Tile t = new Tile(gR, 0, TileSelector.getCurrentID(), TileSelector.getCurrentRotation() / 90 % 4, i, 0);
 				t.setRotation(TileSelector.getCurrentRotation(), false);
                 tileList.add(i, t);
             }
@@ -191,7 +198,7 @@ public class TileMap
         {
             for (int i = 0; i < mapHeight; i++)
             {
-                Tile t = new Tile(0, TileSelector.getCurrentID(), TileSelector.getCurrentRotation() / 90 % 4, mapWidth, i);
+                Tile t = new Tile(gR, 0, TileSelector.getCurrentID(), TileSelector.getCurrentRotation() / 90 % 4, mapWidth, i);
 				t.setRotation(TileSelector.getCurrentRotation(), false);
                 tileList.add(mapWidth + i * (mapWidth + 1), t);
             }
@@ -203,7 +210,7 @@ public class TileMap
             
             for (int i = 0; i < mapHeight; i++)
             {
-                Tile t = new Tile(0, TileSelector.getCurrentID(), TileSelector.getCurrentRotation() / 90 % 4, 0, i);
+                Tile t = new Tile(gR, 0, TileSelector.getCurrentID(), TileSelector.getCurrentRotation() / 90 % 4, 0, i);
 				t.setRotation(TileSelector.getCurrentRotation(), false);
                 tileList.add(i * (mapWidth + 1), t);
             }

@@ -1,6 +1,7 @@
 package woohoo.utils.gameworld;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -10,23 +11,31 @@ import woohoo.utils.gameobjects.TileMap;
 import woohoo.utils.gameobjects.TileSelector;
 
 public class GameRenderer
-{    
-    public static Texture tileSet1 = new Texture("images/tileset1.png");
-	public static Texture tileSet2 = new Texture("images/tileset2.png");
+{    	
+    public Texture tileSet1;
+	public Texture tileSet2;
 	
     static OrthographicCamera cam;
     static SpriteBatch batcher = new SpriteBatch();
-    static TileMap tilemap = new TileMap();
-    static TileSelector bar = new TileSelector();
+    TileMap tilemap;
+    TileSelector bar;
 
-    public static void init()
+    public GameRenderer()
     {
+		FileHandle path = new FileHandle("config.txt");
+		String[] paths = path.readString().split("\n");
+		
+		tileSet1 = new Texture(paths[1].substring(0, paths[1].length() - 1));
+		tileSet2 = new Texture(paths[2]);
+		
         cam = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         cam.setToOrtho(true, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         batcher.setProjectionMatrix(cam.combined);
+		tilemap = new TileMap(this);
+		bar = new TileSelector(this);
     }
 	
-    public static void render(float runTime)
+    public void render(float runTime)
     {		
 		Gdx.gl.glClearColor(0.2f, 0.2f, 0.2f, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);

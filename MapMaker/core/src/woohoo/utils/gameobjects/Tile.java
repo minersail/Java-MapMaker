@@ -1,6 +1,5 @@
 package woohoo.utils.gameobjects;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -10,6 +9,8 @@ import woohoo.utils.gameworld.GameRenderer;
 
 public class Tile
 {
+	private GameRenderer gR;
+	
     private GridPoint2 position = new GridPoint2();
     private TextureRegion tile; // Base layer
 	private TextureRegion decoration; // Decorative layer, starts as null
@@ -29,17 +30,19 @@ public class Tile
     public static final int T_TILE_WIDTH = 16;
     public static final int T_TILE_HEIGHT = 16;
     
-    public static final Texture wallOutline = new Texture(Gdx.files.internal("images/wallOutline.png"));
+    public static final Texture wallOutline = new Texture("images/wallOutline.png");
     
-    public Tile(int decor, int tileID, int function, int initX, int initY)
+    public Tile(GameRenderer gameRenderer, int decor, int tileID, int function, int initX, int initY)
     {
+		gR = gameRenderer;
+		
 		decorationID = decor % 256;
 		
-		int columns = GameRenderer.tileSet1.getWidth() / T_TILE_WIDTH;
+		int columns = gR.tileSet1.getWidth() / T_TILE_WIDTH;
 		int tileX = (tileID % columns) * T_TILE_WIDTH;
 		int tileY = (tileID / columns) * T_TILE_HEIGHT;
 		
-		int columns2 = GameRenderer.tileSet2.getWidth() / T_TILE_WIDTH;
+		int columns2 = gR.tileSet2.getWidth() / T_TILE_WIDTH;
 		int tileX2 = (decorationID % columns2) * T_TILE_WIDTH;
 		int tileY2 = (decorationID / columns2) * T_TILE_HEIGHT;
 		
@@ -49,10 +52,10 @@ public class Tile
         position.x = initX;
         position.y = initY;
         
-        tile = new TextureRegion(GameRenderer.tileSet1, tileX, tileY, T_TILE_WIDTH, T_TILE_HEIGHT);
+        tile = new TextureRegion(gR.tileSet1, tileX, tileY, T_TILE_WIDTH, T_TILE_HEIGHT);
 		if (decorationID != 0)
 		{
-			decoration = new TextureRegion(GameRenderer.tileSet2, tileX2, tileY2, T_TILE_WIDTH, T_TILE_HEIGHT);
+			decoration = new TextureRegion(gR.tileSet2, tileX2, tileY2, T_TILE_WIDTH, T_TILE_HEIGHT);
 			decoration.flip(false, true);
 		}
 		rotation = 90 * (functionID % 4);
@@ -64,11 +67,11 @@ public class Tile
 	// Critical copy constructor for storing undo states
     public Tile(Tile t)
     {
-		int columns = GameRenderer.tileSet1.getWidth() / T_TILE_WIDTH;
+		int columns = gR.tileSet1.getWidth() / T_TILE_WIDTH;
 		int tileX = (t.textureID % columns) * T_TILE_WIDTH;
 		int tileY = (t.textureID / columns) * T_TILE_HEIGHT;
 		
-		int columns2 = GameRenderer.tileSet2.getWidth() / T_TILE_WIDTH;
+		int columns2 = gR.tileSet2.getWidth() / T_TILE_WIDTH;
 		int tileX2 = (t.decorationID % columns2) * T_TILE_WIDTH;
 		int tileY2 = (t.decorationID / columns2) * T_TILE_HEIGHT;
         
@@ -78,14 +81,14 @@ public class Tile
         position.x = t.position.x;
         position.y = t.position.y;       
         
-        tile = new TextureRegion(GameRenderer.tileSet1, tileX, tileY, T_TILE_WIDTH, T_TILE_HEIGHT);
+        tile = new TextureRegion(gR.tileSet1, tileX, tileY, T_TILE_WIDTH, T_TILE_HEIGHT);
 		rotation = t.rotation;
 		decorationRotation = t.decorationRotation;
         isWall = t.isWall;
 		
 		if (t.decoration != null)
 		{
-			decoration = new TextureRegion(GameRenderer.tileSet2, tileX2, tileY2, T_TILE_WIDTH, T_TILE_HEIGHT);
+			decoration = new TextureRegion(gR.tileSet2, tileX2, tileY2, T_TILE_WIDTH, T_TILE_HEIGHT);
 			decoration.flip(false, true);
 		}
 		
@@ -150,12 +153,12 @@ public class Tile
     {    
 		if (isDecoration)
 		{
-			int columns = GameRenderer.tileSet2.getWidth() / T_TILE_WIDTH;
+			int columns = gR.tileSet2.getWidth() / T_TILE_WIDTH;
 			int tileX = (tileID % columns) * T_TILE_WIDTH;
 			int tileY = (tileID / columns) * T_TILE_HEIGHT;        
 
 			// Lazy initialization
-			if (decoration == null) decoration = new TextureRegion(GameRenderer.tileSet2, tileX, tileY, T_TILE_WIDTH, T_TILE_HEIGHT);
+			if (decoration == null) decoration = new TextureRegion(gR.tileSet2, tileX, tileY, T_TILE_WIDTH, T_TILE_HEIGHT);
 			else decoration.setRegion(tileX, tileY, decoration.getRegionWidth(), decoration.getRegionHeight());
 			
 			decoration.flip(false, true);
@@ -164,7 +167,7 @@ public class Tile
 		}
 		else
 		{
-			int columns = GameRenderer.tileSet1.getWidth() / T_TILE_WIDTH;
+			int columns = gR.tileSet1.getWidth() / T_TILE_WIDTH;
 			int tileX = (tileID % columns) * T_TILE_WIDTH;
 			int tileY = (tileID / columns) * T_TILE_HEIGHT;        
 

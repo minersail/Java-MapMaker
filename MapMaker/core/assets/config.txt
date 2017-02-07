@@ -1,0 +1,3 @@
+maps/sandbox.txt
+images/tileset1.png
+images/tileset2.png

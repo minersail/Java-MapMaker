@@ -8,11 +8,11 @@ import woohoo.utils.gameworld.GameWorld;
 public class PlayingScreen implements Screen
 {
     private float runTime;
+	private GameRenderer renderer;
 
-    public PlayingScreen()
+    public PlayingScreen(GameRenderer gR)
     {
-        float screenWidth = Gdx.graphics.getWidth();
-        float screenHeight = Gdx.graphics.getHeight();
+		renderer = gR;
     }
 
     @Override
@@ -20,7 +20,7 @@ public class PlayingScreen implements Screen
     {
         runTime += delta;
         GameWorld.update(delta);
-        GameRenderer.render(runTime);
+        renderer.render(runTime);
     }
 
     @Override

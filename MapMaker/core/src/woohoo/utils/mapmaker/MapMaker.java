@@ -6,11 +6,13 @@ import woohoo.utils.screens.PlayingScreen;
 
 public class MapMaker extends Game
 {		
+	GameRenderer renderer;
+	
 	@Override
 	public void create()
 	{
-		GameRenderer.init();
-		setScreen(new PlayingScreen());
+		renderer = new GameRenderer();
+		setScreen(new PlayingScreen(renderer));
 	}
 
 	@Override

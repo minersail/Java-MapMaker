@@ -17,11 +17,13 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import java.util.List;
 import woohoo.utils.framework.InputHandler;
 import woohoo.utils.framework.UndoManager;
-import static woohoo.utils.gameworld.GameRenderer.tileSet1;
-import static woohoo.utils.gameworld.GameRenderer.tileSet2;
+import woohoo.utils.gameworld.GameRenderer;
 
 public class TileSelector
 {    
+	private static Texture tileSet1;
+	private static Texture tileSet2;
+	
     private static Stage uiStage;
     private static Skin skin;
     private static Table selectRow;
@@ -35,8 +37,11 @@ public class TileSelector
     private static final int MAX_ID = 40;
 	private static int savedID = 0;
     
-    public TileSelector()
+    public TileSelector(GameRenderer gR)
     {
+		tileSet1 = gR.tileSet1;
+		tileSet2 = gR.tileSet2;
+		
         skin = new Skin(Gdx.files.internal("ui/skin.json"));
         uiStage = new Stage(new ScreenViewport());
         selectRow = new Table();

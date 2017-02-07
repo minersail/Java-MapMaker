@@ -6,15 +6,14 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.FileTextureData;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import woohoo.utils.gameworld.GameRenderer;
 
 public class TileButton extends Button
 {
     protected TextureRegion sprite;
     
-    public TileButton()
+    public TileButton(Texture texture)
     {
-        sprite = new TextureRegion(GameRenderer.tileSet1);
+        sprite = new TextureRegion(texture);
     }
     
     public TileButton(Skin skin, TextureRegion spr)
