@@ -1,27 +1,35 @@
 package woohoo.utils.gameworld;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
-import woohoo.utils.framework.InputHandler;
+import woohoo.utils.screens.PlayingScreen;
 
 public class GameWorld
 {	
-	public static void update(float delta)
+	PlayingScreen screen;
+	
+	public GameWorld(PlayingScreen scr)
 	{
-		if (InputHandler.isKeyPressed(Keys.UP))
+		screen = scr;
+	}
+	
+	public void update(float delta)
+	{
+		if (Gdx.input.isKeyPressed(Keys.UP))
 		{
-			GameRenderer.scrollCamera(0, -5);
+			screen.getRenderer().scrollCamera(0, -5);
 		}
-		else if (InputHandler.isKeyPressed(Keys.DOWN))
+		else if (Gdx.input.isKeyPressed(Keys.DOWN))
 		{
-			GameRenderer.scrollCamera(0, 5);			
+			screen.getRenderer().scrollCamera(0, 5);			
 		}
-		else if (InputHandler.isKeyPressed(Keys.LEFT))
+		else if (Gdx.input.isKeyPressed(Keys.LEFT))
 		{			
-			GameRenderer.scrollCamera(-5, 0);
+			screen.getRenderer().scrollCamera(-5, 0);
 		}
-		else if (InputHandler.isKeyPressed(Keys.RIGHT))
+		else if (Gdx.input.isKeyPressed(Keys.RIGHT))
 		{
-			GameRenderer.scrollCamera(5, 0);
+			screen.getRenderer().scrollCamera(5, 0);
 		}
 	}
 }

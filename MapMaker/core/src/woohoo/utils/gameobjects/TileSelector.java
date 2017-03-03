@@ -15,34 +15,36 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import java.util.List;
-import woohoo.utils.framework.InputHandler;
-import woohoo.utils.framework.UndoManager;
-import woohoo.utils.gameworld.GameRenderer;
+import woohoo.utils.screens.PlayingScreen;
 
 public class TileSelector
 {    
-	private static Texture tileSet1;
-	private static Texture tileSet2;
+	private Texture tileSet1;
+	private Texture tileSet2;
 	
-    private static Stage uiStage;
-    private static Skin skin;
-    private static Table selectRow;
-    private static Table editRow;
+	private PlayingScreen screen;
 	
-	private static InputHandler input = new InputHandler();
+    private final Stage uiStage;
+    private final Skin skin;
+    private final Table selectRow;
+    private Table editRow;
     
-    private static Texture left = new Texture("images/leftbutton.png");
-    private static Texture right = new Texture("images/rightbutton.png");
+    private final Texture left;
+    private final Texture right;
     
-    private static final int MAX_ID = 40;
-	private static int savedID = 0;
+    private final int MAX_ID = 40;
+	private int savedID = 0;
     
-    public TileSelector(GameRenderer gR)
+    public TileSelector(PlayingScreen scr)
     {
-		tileSet1 = gR.tileSet1;
-		tileSet2 = gR.tileSet2;
+		screen = scr;
+		
+		tileSet1 = Tile.tileset1;
+		tileSet2 = Tile.tileset2;
 		
         skin = new Skin(Gdx.files.internal("ui/skin.json"));
+		right = new Texture("images/rightbutton.png");
+		left = new Texture("images/leftbutton.png");
         uiStage = new Stage(new ScreenViewport());
         selectRow = new Table();
         editRow = new Table();
@@ -56,7 +58,7 @@ public class TileSelector
             @Override
             public void clicked(InputEvent event, float x, float y)
             {
-				if (InputHandler.getDecorationMode())
+				if (screen.getInput().getDecorationMode())
 					current.setDecorationRotation(current.getDecorationRotation() + 90);					
 				else
 					current.setSpriteRotation(current.getSpriteRotation() + 90);
@@ -74,7 +76,7 @@ public class TileSelector
                 @Override
                 public void clicked(InputEvent event, float x, float y)
                 {
-                    TileMap.addRow(direction);
+                    screen.getRenderer().getMap().addRow(direction);
                 }
             });
             editRow.add(expandButton).prefWidth(80).prefHeight(80);
@@ -89,7 +91,7 @@ public class TileSelector
                 @Override
                 public void clicked(InputEvent event, float x, float y)
                 {
-                    TileMap.deleteRow(direction);
+                    screen.getRenderer().getMap().deleteRow(direction);
                 }
             });
             editRow.add(retractButton).prefWidth(80).prefHeight(80);
@@ -103,7 +105,7 @@ public class TileSelector
             public void clicked(InputEvent event, float x, float y)
             {
                 wall.setColor(wall.getColor().toString().equals("ffd700ff") ? Color.WHITE : Color.GOLD); // ffd700ff is gold rgb
-                InputHandler.toggleWallMode();
+                screen.getInput().toggleWallMode();
             }
         });
         editRow.add(wall).prefWidth(80).prefHeight(80);
@@ -117,7 +119,7 @@ public class TileSelector
             {
 				layer.setColor(layer.getColor().toString().equals("ffd700ff") ? Color.WHITE : Color.GOLD); // ffd700ff is gold rgb
 				switchTexture(layer.getColor().toString().equals("ffd700ff") ? tileSet2 : tileSet1);
-				InputHandler.toggleDecorationMode();
+				screen.getInput().toggleDecorationMode();
 				current.toggleDecorationMode();
             }
         });
@@ -130,7 +132,7 @@ public class TileSelector
             @Override
             public void clicked(InputEvent event, float x, float y)
             {
-                TileMap.useUndo(UndoManager.getLastState());
+                screen.getRenderer().getMap().useUndo(screen.getUndoManager().getLastState());
             }
         });
         editRow.add(undo).prefWidth(80).prefHeight(80);
@@ -150,7 +152,7 @@ public class TileSelector
 						if (text.equals(""))
 							return;
 						
-						List<String> codes = TileMap.getCodes();
+						List<String> codes = screen.getRenderer().getMap().getCodes();
 						FileHandle file = new FileHandle("maps/" + text + ".txt");
 						
 						if (file.exists())
@@ -265,7 +267,7 @@ public class TileSelector
         down.setPosition(720, 0);
         down.setSize(80, 80);
                 
-        InputMultiplexer im = new InputMultiplexer(uiStage, input);
+        InputMultiplexer im = new InputMultiplexer(uiStage, screen.getInput());
         Gdx.input.setInputProcessor(im);
     }
     
@@ -319,14 +321,14 @@ public class TileSelector
 		current.switchTexture(text, temp);
 	}
     
-    public static int getCurrentID()
+    public int getCurrentID()
     {
         TileButton current = (TileButton)editRow.getCells().first().getActor();
         
         return current.getTextureID();
     }    
 	
-	public static int getCurrentRotation()
+	public int getCurrentRotation()
     {
         CurrentButton current = (CurrentButton)editRow.getCells().first().getActor();
         // 360 is because UI is not y-flipped and so rotates the other direction
@@ -337,7 +339,7 @@ public class TileSelector
 		return rotation;
     }
     
-    public static int getCurrentRotation(boolean decoration)
+    public int getCurrentRotation(boolean decoration)
     {
         CurrentButton current = (CurrentButton)editRow.getCells().first().getActor();
         // 360 is because UI is not y-flipped and so rotates the other direction
@@ -350,7 +352,7 @@ public class TileSelector
 		{
 			file.writeString(codes.get(i), true);
 
-			if ((i + 1) % TileMap.mapWidth == 0)
+			if ((i + 1) % screen.getRenderer().getMap().mapWidth == 0)
 			{
 				file.writeString(System.getProperty("line.separator"), true);
 			} else if (i <= codes.size() - 1)
@@ -358,5 +360,11 @@ public class TileSelector
 				file.writeString(" ", true);
 			}
 		}
+	}
+	
+	public void resize(int width, int height)
+	{
+		uiStage.getViewport().update(width, height, false);
+		editRow.setX(width - 80);
 	}
 }

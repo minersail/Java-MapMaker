@@ -1,36 +1,76 @@
 package woohoo.utils.screens;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import woohoo.utils.framework.InputHandler;
+import woohoo.utils.framework.UndoManager;
+import woohoo.utils.gameobjects.Tile;
+import woohoo.utils.gameobjects.TileSelector;
 import woohoo.utils.gameworld.GameRenderer;
 import woohoo.utils.gameworld.GameWorld;
 
 public class PlayingScreen implements Screen
 {
     private float runTime;
-	private GameRenderer renderer;
+	private final GameRenderer renderer;
+	private final GameWorld world;
+	private final UndoManager undoManager;
+	private final InputHandler input;
+	private final TileSelector selector;
 
-    public PlayingScreen(GameRenderer gR)
+    public PlayingScreen()
     {
-		renderer = gR;
+		Tile.setTilesets();
+		
+		renderer = new GameRenderer(this);
+		world = new GameWorld(this);
+		undoManager = new UndoManager(this);
+		input = new InputHandler(this);
+		selector = new TileSelector(this);
     }
 
     @Override
     public void render(float delta)
     {
         runTime += delta;
-        GameWorld.update(delta);
+        world.update(delta);
         renderer.render(runTime);
+		selector.draw();
     }
 
     @Override
     public void resize(int width, int height)
     {
-		GameRenderer.getCamera().viewportWidth = width;
-		GameRenderer.getCamera().viewportHeight = height;
-		GameRenderer.getCamera().update();
-        System.out.println("GameScreen - resizing");
+		renderer.getCamera().viewportWidth = width;
+		renderer.getCamera().viewportHeight = height;
+		renderer.getCamera().update();
+		
+		selector.resize(width, height);
     }
+	
+	public GameRenderer getRenderer()
+	{
+		return renderer;
+	}
+	
+	public GameWorld getWorld()
+	{
+		return world;
+	}
+	
+	public UndoManager getUndoManager()
+	{
+		return undoManager;
+	}
+	
+	public InputHandler getInput()
+	{
+		return input;
+	}
+	
+	public TileSelector getSelector()
+	{
+		return selector;
+	}
 
     @Override
     public void show()

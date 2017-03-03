@@ -2,33 +2,40 @@ package woohoo.utils.framework;
 
 import java.util.ArrayList;
 import java.util.List;
-import woohoo.utils.gameobjects.TileMap;
+import woohoo.utils.screens.PlayingScreen;
 
 public class UndoManager
 {
-	private static List<UndoState> states = new ArrayList<>();
+	private PlayingScreen screen;	
 	
-	public static List<UndoState> getStates()
+	private List<UndoState> states = new ArrayList<>();
+	
+	public UndoManager(PlayingScreen scr)
+	{
+		screen = scr;
+	}
+	
+	public List<UndoState> getStates()
 	{
 		return states;
 	}
 	
-	public static void add(UndoState state)
+	public void add(UndoState state)
 	{
 		states.add(state);
 	}
 	
-	public static UndoState getLastState()
+	public UndoState getLastState()
 	{
-        if (states.size() == 0)
+        if (states.isEmpty())
         {
-            return TileMap.getCurrentState();
+            return screen.getRenderer().getMap().getCurrentState();
         }
         
         return states.remove(states.size() - 1);
 	}
     
-    public static int getUndosLeft()
+    public int getUndosLeft()
     {
         return states.size();
     }

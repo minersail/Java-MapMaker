@@ -4,16 +4,16 @@ import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import java.util.ArrayList;
 import java.util.List;
-import woohoo.utils.framework.UndoManager;
 import woohoo.utils.framework.UndoState;
 import woohoo.utils.gameworld.GameRenderer;
 
 public class TileMap
 {
-	private static GameRenderer gR;
-    public static int mapHeight;
-    public static int mapWidth;    
-	private static List<Tile> tileList = new ArrayList<>();
+	private final GameRenderer gR;
+	private List<Tile> tileList = new ArrayList<>();
+	
+    public int mapHeight;
+    public int mapWidth;    
 	
 	public TileMap(GameRenderer renderer)
 	{
@@ -41,7 +41,7 @@ public class TileMap
 				int function = Integer.parseInt(tile.substring(4, 6), 16);
 				int texture = Integer.parseInt(tile.substring(6, 8), 16);
 								
-				Tile t = new Tile(renderer, decoration, texture, function, j, i);
+				Tile t = new Tile(decoration, texture, function, j, i);
 				tileList.add(t);
 				j++;
 			}
@@ -60,7 +60,7 @@ public class TileMap
 		batcher.end();
 	}
     
-    public static Tile selectTile(int x, int y)
+    public Tile selectTile(int x, int y)
     {
         x /= Tile.G_TILE_WIDTH;
         y /= Tile.G_TILE_HEIGHT;
@@ -73,7 +73,7 @@ public class TileMap
         return clicked;
     }
     
-    public static List<Tile> selectTiles(int x1, int y1, int x2, int y2)
+    public List<Tile> selectTiles(int x1, int y1, int x2, int y2)
     {
 		// Translate pixel coords to tile coords
         x1 /= Tile.G_TILE_WIDTH;
@@ -121,7 +121,7 @@ public class TileMap
         return tiles;
     }
     
-    public static void deselectAll()
+    public void deselectAll()
     {
         for (Tile tile : tileList)
         {
@@ -129,7 +129,7 @@ public class TileMap
         }
     }
     
-    public static void highlightAll(List<Tile> tiles)
+    public void highlightAll(List<Tile> tiles)
     {        
         for (Tile tile : tiles)
         {
@@ -137,20 +137,20 @@ public class TileMap
         }
     }
     
-    public static void replaceAll(List<Tile> tiles, boolean isDecoration)
+    public void replaceAll(List<Tile> tiles, boolean isDecoration)
     {	
-        UndoManager.add(new UndoState(tileList, mapWidth, mapHeight));
+        gR.addUndoState(new UndoState(tileList, mapWidth, mapHeight));
         
         for (Tile tile : tiles)
         {
-            tile.replaceTexture(TileSelector.getCurrentID(), isDecoration);
-            tile.setRotation(TileSelector.getCurrentRotation(isDecoration), isDecoration);
+            tile.replaceTexture(gR.getSelector().getCurrentID(), isDecoration);
+            tile.setRotation(gR.getSelector().getCurrentRotation(isDecoration), isDecoration);
         }
     }
     
-    public static void toggleWall(List<Tile> tiles)
+    public void toggleWall(List<Tile> tiles)
     {
-        UndoManager.add(new UndoState(tileList, mapWidth, mapHeight));
+        gR.addUndoState(new UndoState(tileList, mapWidth, mapHeight));
         
         for (Tile tile : tiles)
         {
@@ -163,7 +163,7 @@ public class TileMap
     
     e.g. move(1, 1) instead of move(64, 64)
     */
-    private static void moveAll(int deltaX, int deltaY)
+    private void moveAll(int deltaX, int deltaY)
     {
         for (Tile tile : tileList)
         {
@@ -171,16 +171,16 @@ public class TileMap
         }
     }
     
-    public static void addRow(String dir)
+    public void addRow(String dir)
     {
-        UndoManager.add(new UndoState(tileList, mapWidth, mapHeight));
+        gR.addUndoState(new UndoState(tileList, mapWidth, mapHeight));
         
         if (dir.equals("down"))
         {
             for (int i = 0; i < mapWidth; i++)
             {
-                Tile t = new Tile(gR, 0, TileSelector.getCurrentID(), TileSelector.getCurrentRotation() / 90 % 4, i, mapHeight);
-				t.setRotation(TileSelector.getCurrentRotation(false), false);
+                Tile t = new Tile(0, gR.getSelector().getCurrentID(), gR.getSelector().getCurrentRotation() / 90 % 4, i, mapHeight);
+				t.setRotation(gR.getSelector().getCurrentRotation(false), false);
                 tileList.add(t);
             }
             mapHeight++;
@@ -191,8 +191,8 @@ public class TileMap
             
             for (int i = 0; i < mapWidth; i++)
             {
-                Tile t = new Tile(gR, 0, TileSelector.getCurrentID(), TileSelector.getCurrentRotation() / 90 % 4, i, 0);
-				t.setRotation(TileSelector.getCurrentRotation(), false);
+                Tile t = new Tile(0, gR.getSelector().getCurrentID(), gR.getSelector().getCurrentRotation() / 90 % 4, i, 0);
+				t.setRotation(gR.getSelector().getCurrentRotation(), false);
                 tileList.add(i, t);
             }
             mapHeight++;
@@ -201,8 +201,8 @@ public class TileMap
         {
             for (int i = 0; i < mapHeight; i++)
             {
-                Tile t = new Tile(gR, 0, TileSelector.getCurrentID(), TileSelector.getCurrentRotation() / 90 % 4, mapWidth, i);
-				t.setRotation(TileSelector.getCurrentRotation(), false);
+                Tile t = new Tile(0, gR.getSelector().getCurrentID(), gR.getSelector().getCurrentRotation() / 90 % 4, mapWidth, i);
+				t.setRotation(gR.getSelector().getCurrentRotation(), false);
                 tileList.add(mapWidth + i * (mapWidth + 1), t);
             }
             mapWidth++;
@@ -213,17 +213,17 @@ public class TileMap
             
             for (int i = 0; i < mapHeight; i++)
             {
-                Tile t = new Tile(gR, 0, TileSelector.getCurrentID(), TileSelector.getCurrentRotation() / 90 % 4, 0, i);
-				t.setRotation(TileSelector.getCurrentRotation(), false);
+                Tile t = new Tile(0, gR.getSelector().getCurrentID(), gR.getSelector().getCurrentRotation() / 90 % 4, 0, i);
+				t.setRotation(gR.getSelector().getCurrentRotation(), false);
                 tileList.add(i * (mapWidth + 1), t);
             }
             mapWidth++;
         }
     }
     
-    public static void deleteRow(String dir)
+    public void deleteRow(String dir)
     {
-        UndoManager.add(new UndoState(tileList, mapWidth, mapHeight));
+        gR.addUndoState(new UndoState(tileList, mapWidth, mapHeight));
         
         if (dir.equals("down"))
         {
@@ -263,7 +263,7 @@ public class TileMap
         }
     }
 	
-    public static List<String> getCodes()
+    public List<String> getCodes()
     {
         List<String> codes = new ArrayList<>();
 
@@ -274,25 +274,25 @@ public class TileMap
         return codes;
     }
     
-    public static void useUndo(UndoState undo)
+    public void useUndo(UndoState undo)
     {
         tileList = getTileListCopy(undo.state);
         mapWidth = undo.width;
         mapHeight = undo.height;
     }
     
-    public static UndoState getCurrentState()
+    public UndoState getCurrentState()
     {
         return new UndoState(tileList, mapWidth, mapHeight);
     }
     
-    public static List<Tile> getTileListCopy(List<Tile> list)
+    public List<Tile> getTileListCopy(List<Tile> list)
     {
         List<Tile> newList = new ArrayList<>();
         
         for (Tile tile : list)
         {
-            Tile newTile = new Tile(gR, tile);
+            Tile newTile = new Tile(tile);
             newList.add(newTile);
         }
         

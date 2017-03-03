@@ -1,8 +1,8 @@
 package woohoo.utils.framework;
 
+import java.util.ArrayList;
 import java.util.List;
 import woohoo.utils.gameobjects.Tile;
-import woohoo.utils.gameobjects.TileMap;
 
 public class UndoState
 {
@@ -14,6 +14,12 @@ public class UndoState
 	{
 		width = w;
 		height = h;
-		state = TileMap.getTileListCopy(s);
+		state = new ArrayList<>();
+        
+        for (Tile tile : s)
+        {
+            Tile newTile = new Tile(tile);
+            state.add(newTile);
+        }
 	}
 }
