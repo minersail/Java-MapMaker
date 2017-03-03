@@ -26,6 +26,9 @@ public class PlayingScreen implements Screen
     @Override
     public void resize(int width, int height)
     {
+		GameRenderer.getCamera().viewportWidth = width;
+		GameRenderer.getCamera().viewportHeight = height;
+		GameRenderer.getCamera().update();
         System.out.println("GameScreen - resizing");
     }
 
