@@ -31,9 +31,13 @@ public class TileSelector
     
     private final Texture left;
     private final Texture right;
+	
+	private final TileButton up;
+	private final TileButton down;
     
     private final int MAX_ID = 40;
 	private int savedID = 0;
+	private int savedIndex = 0;
     
     public TileSelector(PlayingScreen scr)
     {
@@ -188,8 +192,6 @@ public class TileSelector
         editRow.setWidth(80);
         editRow.setHeight(editRow.getCells().size * 80);
         
-        editRow.setPosition(720, 720 - editRow.getCells().size * 80);
-        
         //======================================================================
         //======================================================================
                 
@@ -239,32 +241,30 @@ public class TileSelector
         //======================================================================
         //======================================================================
               
-        TileButton up = new TileButton(skin, new TextureRegion(new Texture("images/upbutton.png")));
+        up = new TileButton(skin, new TextureRegion(new Texture("images/upbutton.png")));
         up.addListener(new ClickListener()
         {
             @Override
             public void clicked(InputEvent event, float x, float y)
             {
-                if (editRow.getY() > 720 - editRow.getCells().size * 80)
+                if (editRow.getY() > Gdx.graphics.getHeight() / 2 + 320 - editRow.getCells().size * 80)
                     editRow.setY(editRow.getY() - 80);
             }
         });
         uiStage.addActor(up);
-        up.setPosition(720, 720);
         up.setSize(80, 80);
         
-        TileButton down = new TileButton(skin, new TextureRegion(new Texture("images/downbutton.png")));
+        down = new TileButton(skin, new TextureRegion(new Texture("images/downbutton.png")));
         down.addListener(new ClickListener()
         {
             @Override
             public void clicked(InputEvent event, float x, float y)
             {
-                if (editRow.getY() < 80)
+                if (editRow.getY() < 480 - Gdx.graphics.getHeight() / 2)
                     editRow.setY(editRow.getY() + 80);
             }
         });
         uiStage.addActor(down);
-        down.setPosition(720, 0);
         down.setSize(80, 80);
                 
         InputMultiplexer im = new InputMultiplexer(uiStage, screen.getInput());
@@ -302,14 +302,16 @@ public class TileSelector
 	
 	public void switchTexture(Texture text)
 	{		
-		int i = 0;
+		int i = savedIndex;
+		savedIndex = ((TileButton)selectRow.getCells().get(1).getActor()).getTextureID();
+		
 		for (Cell cell : selectRow.getCells())
         {
             TileButton button = (TileButton)cell.getActor();
             
 			if (!button.getImagePath().equals("images/leftbutton.png") && !button.getImagePath().equals("images/rightbutton.png"))
 			{
-				button.switchTexture(text, i);
+				button.switchTexture(text, i, screen.getRenderer().getMap().mapWidth);
 				i++;
 			}
         }
@@ -318,7 +320,7 @@ public class TileSelector
 		
 		int temp = savedID;
 		savedID = getCurrentID();
-		current.switchTexture(text, temp);
+		current.switchTexture(text, temp, screen.getRenderer().getMap().mapWidth);
 	}
     
     public int getCurrentID()
@@ -365,6 +367,14 @@ public class TileSelector
 	public void resize(int width, int height)
 	{
 		uiStage.getViewport().update(width, height, false);
-		editRow.setX(width - 80);
+		
+		editRow.setX(width / 2 + 320);
+		editRow.setY(height / 2 + 320 - editRow.getCells().size * 80);
+		up.setX(editRow.getX());
+		up.setY(editRow.getY() + editRow.getCells().size * 80);
+		down.setX(editRow.getX());
+		down.setY(400 - height / 2);
+		
+		selectRow.setY(400 - height / 2);
 	}
 }

@@ -27,9 +27,9 @@ public class TileButton extends Button
         return sprite;
     }
 	
-	public void switchTexture(Texture text, int tile)
+	public void switchTexture(Texture text, int tile, int mapWidth)
 	{
-		sprite = new TextureRegion(text, tile * 16, 0, 16, 16);
+		sprite = new TextureRegion(text, tile % mapWidth * 16, tile / mapWidth * 16, 16, 16);
 	}
     
     public String getImagePath()

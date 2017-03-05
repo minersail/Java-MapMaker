@@ -1,3 +1,3 @@
-maps/sandbox.txt
+maps/dupe.txt
 images/tileset1.png
-images/tileset2.png
+images/d_tileset1.png

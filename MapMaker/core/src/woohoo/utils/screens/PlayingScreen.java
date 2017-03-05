@@ -36,16 +36,6 @@ public class PlayingScreen implements Screen
         renderer.render(runTime);
 		selector.draw();
     }
-
-    @Override
-    public void resize(int width, int height)
-    {
-		renderer.getCamera().viewportWidth = width;
-		renderer.getCamera().viewportHeight = height;
-		renderer.getCamera().update();
-		
-		selector.resize(width, height);
-    }
 	
 	public GameRenderer getRenderer()
 	{
@@ -71,6 +61,13 @@ public class PlayingScreen implements Screen
 	{
 		return selector;
 	}
+
+    @Override
+    public void resize(int width, int height)
+    {
+		renderer.resize(width, height);		
+		selector.resize(width, height);
+    }
 
     @Override
     public void show()

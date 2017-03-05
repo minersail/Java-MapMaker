@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import woohoo.utils.framework.UndoState;
 import woohoo.utils.gameobjects.Tile;
 import woohoo.utils.gameobjects.TileMap;
@@ -15,6 +16,7 @@ public class GameRenderer
 	private final PlayingScreen screen;
 	
     private final OrthographicCamera cam;
+	private final ScreenViewport viewport;
     private final SpriteBatch batcher = new SpriteBatch();
     private final TileMap tilemap;
 
@@ -24,6 +26,8 @@ public class GameRenderer
 		
         cam = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         cam.setToOrtho(true, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+		viewport = new ScreenViewport(cam);
+		viewport.apply();
         batcher.setProjectionMatrix(cam.combined);
 		tilemap = new TileMap(this);
     }
@@ -71,5 +75,13 @@ public class GameRenderer
 	public TileSelector getSelector()
 	{
 		return screen.getSelector();
+	}
+	
+	public void resize(int width, int height)
+	{
+		cam.position.x = width / 2;
+		cam.position.y = height / 2;
+		viewport.update(width, height);
+		batcher.setProjectionMatrix(cam.combined);
 	}
 }
