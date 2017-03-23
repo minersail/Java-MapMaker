@@ -356,8 +356,9 @@ public class TileSelector
 
 			if ((i + 1) % screen.getRenderer().getMap().mapWidth == 0)
 			{
-				file.writeString(System.getProperty("line.separator"), true);
-			} else if (i <= codes.size() - 1)
+				file.writeString("\r\n", true); // Export with \r\n for maximum compatibility
+			} 
+			else if (i <= codes.size() - 1)
 			{
 				file.writeString(" ", true);
 			}

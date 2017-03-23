@@ -22,12 +22,11 @@ public class TileMap
 		FileHandle path = new FileHandle("config.txt");
 		String[] paths = path.readString().split("\n");
 		
-		// IDK WHY BUT THERE'S A RANDOM ASS NEWLINE CHARACTER I CAN'T GET RID OF
-		FileHandle mapHandle = new FileHandle(paths[0].substring(0, paths[0].length() - 1));
+		FileHandle mapHandle = new FileHandle(paths[0].replace("\r", ""));
 		String map = mapHandle.readString();
 		
 		String[] rows = map.split("\n");
-		mapWidth = rows[0].length() / 9;
+		mapWidth = (rows[0].length() + 1) / 9;
 		mapHeight = rows.length;
 		
 		int i = 0;

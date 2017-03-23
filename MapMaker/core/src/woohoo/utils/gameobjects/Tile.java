@@ -99,7 +99,7 @@ public class Tile
 		FileHandle path = new FileHandle("config.txt");
 		String[] paths = path.readString().split("\n");
 		
-		tileset1 = new Texture(paths[1].substring(0, paths[1].length() - 1));
+		tileset1 = new Texture(paths[1].replace("\r", ""));
 		tileset2 = new Texture(paths[2]);
 	}
     
