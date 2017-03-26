@@ -157,7 +157,7 @@ public class TileSelector
 							return;
 						
 						List<String> codes = screen.getRenderer().getMap().getCodes();
-						FileHandle file = new FileHandle("maps/" + text + ".txt");
+						FileHandle file = Gdx.files.local("maps/" + text + ".txt");
 						
 						if (file.exists())
 						{		
@@ -358,7 +358,7 @@ public class TileSelector
 			{
 				file.writeString("\r\n", true); // Export with \r\n for maximum compatibility
 			} 
-			else if (i <= codes.size() - 1)
+			else
 			{
 				file.writeString(" ", true);
 			}
