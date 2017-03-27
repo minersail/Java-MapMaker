@@ -25,7 +25,7 @@ public class TileMap
 		FileHandle mapHandle = new FileHandle(paths[0].replace("\r", ""));
 		String map = mapHandle.readString();
 		
-		String[] rows = map.split("\n");
+		String[] rows = map.replace("\r", "").split("\n");
 		mapWidth = (rows[0].length() + 1) / 9;
 		mapHeight = rows.length;
 		
