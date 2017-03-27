@@ -35,7 +35,7 @@ public class TileSelector
 	private final TileButton up;
 	private final TileButton down;
     
-    private final int MAX_ID = 40;
+    private final int MAX_ID = 255;
 	private int savedID = 0;
 	private int savedIndex = 0;
     
