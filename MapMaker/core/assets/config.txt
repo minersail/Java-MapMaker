@@ -1,3 +1,3 @@
-maps/pintel2.txt
+maps/pintel3.txt
 images/tileset1.png
 images/d_tileset1.png
