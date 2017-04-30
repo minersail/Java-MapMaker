@@ -311,7 +311,7 @@ public class TileSelector
             
 			if (!button.getImagePath().equals("images/leftbutton.png") && !button.getImagePath().equals("images/rightbutton.png"))
 			{
-				button.switchTexture(text, i, screen.getRenderer().getMap().mapWidth);
+				button.switchTexture(text, i);
 				i++;
 			}
         }
@@ -320,7 +320,7 @@ public class TileSelector
 		
 		int temp = savedID;
 		savedID = getCurrentID();
-		current.switchTexture(text, temp, screen.getRenderer().getMap().mapWidth);
+		current.switchTexture(text, temp);
 	}
     
     public int getCurrentID()

@@ -27,9 +27,9 @@ public class TileButton extends Button
         return sprite;
     }
 	
-	public void switchTexture(Texture text, int tile, int mapWidth)
+	public void switchTexture(Texture text, int tile)
 	{
-		sprite = new TextureRegion(text, tile % mapWidth * 16, tile / mapWidth * 16, 16, 16);
+		sprite = new TextureRegion(text, (tile % Tile.TILE_COLUMNS) * Tile.T_TILE_WIDTH, (tile / Tile.TILE_COLUMNS) * Tile.T_TILE_HEIGHT, Tile.T_TILE_WIDTH, Tile.T_TILE_HEIGHT);
 	}
     
     public String getImagePath()
@@ -44,7 +44,7 @@ public class TileButton extends Button
     
     public void setTextureID(int ID)
     {
-        sprite.setRegion((ID % 16) * 16, (ID / 16) * 16, sprite.getRegionWidth(), sprite.getRegionHeight());
+        sprite.setRegion((ID % Tile.TILE_COLUMNS) * Tile.T_TILE_WIDTH, (ID / Tile.TILE_COLUMNS) * Tile.T_TILE_HEIGHT, sprite.getRegionWidth(), sprite.getRegionHeight());
     }
 	
 	protected void drawBackground(Batch batcher, float parentAlpha)

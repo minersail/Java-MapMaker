@@ -6,7 +6,6 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.GridPoint2;
-import woohoo.utils.gameworld.GameRenderer;
 
 public class Tile
 {	
@@ -28,6 +27,8 @@ public class Tile
 	/* Dimensions of tiles on the spritesheet */
     public static final int T_TILE_WIDTH = 16;
     public static final int T_TILE_HEIGHT = 16;
+	
+	public static final int TILE_COLUMNS = 16;
     
     public static final Texture wallOutline = new Texture("images/wallOutline.png");
 	public static Texture tileset1;

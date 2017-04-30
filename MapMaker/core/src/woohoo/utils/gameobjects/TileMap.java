@@ -268,7 +268,6 @@ public class TileMap
 
         for (Tile tile : tileList)
         {
-			System.out.println(tile.getDecorationCode() + tile.getCode());
             codes.add(tile.getDecorationCode() + tile.getCode());
         }		
         return codes;
