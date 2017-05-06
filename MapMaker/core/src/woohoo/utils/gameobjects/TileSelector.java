@@ -31,6 +31,8 @@ public class TileSelector
     
     private final Texture left;
     private final Texture right;
+    private final Texture left2;
+    private final Texture right2;
 	
 	private final TileButton up;
 	private final TileButton down;
@@ -38,6 +40,8 @@ public class TileSelector
     private final int MAX_ID = 255;
 	private int savedID = 0;
 	private int savedIndex = 0;
+	
+	private int SHIFT_INDEX = 2;
     
     public TileSelector(PlayingScreen scr)
     {
@@ -49,6 +53,8 @@ public class TileSelector
         skin = new Skin(Gdx.files.internal("ui/skin.json"));
 		right = new Texture("images/rightbutton.png");
 		left = new Texture("images/leftbutton.png");
+		right2 = new Texture("images/rightbutton2.png");
+		left2 = new Texture("images/leftbutton2.png");
         uiStage = new Stage(new ScreenViewport());
         selectRow = new Table();
         editRow = new Table();
@@ -195,8 +201,19 @@ public class TileSelector
         //======================================================================
         //======================================================================
                 
-        selectRow.setWidth(720);
+        selectRow.setWidth(880);
         selectRow.setHeight(80);
+		
+		TileButton leftbutton2 = new TileButton(skin, new TextureRegion(left2));
+        leftbutton2.addListener(new ClickListener()
+        {
+            @Override
+            public void clicked(InputEvent event, float x, float y)
+            {
+                shift(false, 7);
+            }
+        });
+        selectRow.add(leftbutton2).prefWidth(80).prefHeight(80);
         
         TileButton leftbutton = new TileButton(skin, new TextureRegion(left));
         leftbutton.addListener(new ClickListener()
@@ -204,7 +221,7 @@ public class TileSelector
             @Override
             public void clicked(InputEvent event, float x, float y)
             {
-                shift(false);
+                shift(false, 1);
             }
         });
         selectRow.add(leftbutton).prefWidth(80).prefHeight(80);
@@ -226,16 +243,27 @@ public class TileSelector
         }
         
         TileButton rightbutton = new TileButton(skin, new TextureRegion(right));
-        selectRow.add(rightbutton).prefWidth(80).prefHeight(80);
         rightbutton.addListener(new ClickListener()
         {
             @Override
             public void clicked(InputEvent event, float x, float y)
             {
-                shift(true);
+                shift(true, 1);
             }
         });
+        selectRow.add(rightbutton).prefWidth(80).prefHeight(80);
         
+        TileButton rightbutton2 = new TileButton(skin, new TextureRegion(right2));
+        rightbutton2.addListener(new ClickListener()
+        {
+            @Override
+            public void clicked(InputEvent event, float x, float y)
+            {
+                shift(true, 7);
+            }
+        });
+        selectRow.add(rightbutton2).prefWidth(80).prefHeight(80);
+		
         uiStage.addActor(selectRow);
         uiStage.addActor(editRow);
         //======================================================================
@@ -277,24 +305,27 @@ public class TileSelector
         uiStage.draw();
     }
     
-    public void shift(boolean forward)
+    public void shift(boolean forward, int shift)
     {
-        TileButton first = (TileButton)selectRow.getCells().get(1).getActor();
+        TileButton first = (TileButton)selectRow.getCells().get(SHIFT_INDEX).getActor();
         int firstID = first.getTextureID();
         
         for (Cell cell : selectRow.getCells())
         {
             TileButton button = (TileButton)cell.getActor();
             
-            if (!button.getImagePath().equals("images/leftbutton.png") && !button.getImagePath().equals("images/rightbutton.png"))
+            if (!button.getImagePath().equals("images/leftbutton.png") && !button.getImagePath().equals("images/rightbutton.png") &&
+				!button.getImagePath().equals("images/leftbutton2.png") && !button.getImagePath().equals("images/rightbutton2.png"))
             {
-                if (forward && firstID + selectRow.getCells().size - 2 < MAX_ID)
+                if (forward)
                 {
-                    button.setTextureID(button.getTextureID() + 1);
+					shift = firstID + shift < MAX_ID ? shift : MAX_ID - firstID;
+                    button.setTextureID(button.getTextureID() + shift);
                 }
-                else if (!forward && firstID > 0)
+                else
                 {
-                    button.setTextureID(button.getTextureID() - 1);
+					shift = firstID - shift > 0 ? shift : firstID;
+                    button.setTextureID(button.getTextureID() - shift);
                 }
             }
         }
@@ -303,13 +334,14 @@ public class TileSelector
 	public void switchTexture(Texture text)
 	{		
 		int i = savedIndex;
-		savedIndex = ((TileButton)selectRow.getCells().get(1).getActor()).getTextureID();
+		savedIndex = ((TileButton)selectRow.getCells().get(SHIFT_INDEX).getActor()).getTextureID();
 		
 		for (Cell cell : selectRow.getCells())
         {
             TileButton button = (TileButton)cell.getActor();
             
-			if (!button.getImagePath().equals("images/leftbutton.png") && !button.getImagePath().equals("images/rightbutton.png"))
+			if (!button.getImagePath().equals("images/leftbutton.png") && !button.getImagePath().equals("images/rightbutton.png") &&
+				!button.getImagePath().equals("images/leftbutton2.png") && !button.getImagePath().equals("images/rightbutton2.png"))
 			{
 				button.switchTexture(text, i);
 				i++;
@@ -376,6 +408,7 @@ public class TileSelector
 		down.setX(editRow.getX());
 		down.setY(400 - height / 2);
 		
+		selectRow.setX(-80);
 		selectRow.setY(400 - height / 2);
 	}
 }
