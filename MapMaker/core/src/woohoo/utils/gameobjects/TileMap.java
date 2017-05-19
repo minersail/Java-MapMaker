@@ -147,13 +147,13 @@ public class TileMap
         }
     }
     
-    public void toggleWall(List<Tile> tiles)
+    public void toggleFunction(List<Tile> tiles)
     {
         gR.addUndoState(new UndoState(tileList, mapWidth, mapHeight));
         
         for (Tile tile : tiles)
         {
-            tile.toggleWall();
+            tile.toggleFunction(gR.getSelector().getFunction());
         }
     }
     

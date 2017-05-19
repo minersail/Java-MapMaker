@@ -12,7 +12,7 @@ public class InputHandler implements InputProcessor
 	private PlayingScreen screen;
 	
     private Vector2 mouseDown;
-    private boolean wallMode;
+    private boolean functionMode;
 	private boolean decorationMode;
     
     public InputHandler(PlayingScreen scr)
@@ -41,10 +41,15 @@ public class InputHandler implements InputProcessor
         return false;
     }
     
-    public void toggleWallMode()
+    public void toggleFunctionMode()
     {
-        wallMode = !wallMode;
+        functionMode = !functionMode;
     }
+	
+	public boolean getFunctionMode()
+	{
+		return functionMode;
+	}
     
     public void toggleDecorationMode()
     {
@@ -78,9 +83,9 @@ public class InputHandler implements InputProcessor
         
         tileMap.deselectAll();
                 
-        if (wallMode)
+        if (functionMode)
         {
-            tileMap.toggleWall(tileMap.selectTiles((int)mouseDown.x, (int)mouseDown.y, screenX + dispX, screenY + dispY));
+            tileMap.toggleFunction(tileMap.selectTiles((int)mouseDown.x, (int)mouseDown.y, screenX + dispX, screenY + dispY));
         }
         else
         {

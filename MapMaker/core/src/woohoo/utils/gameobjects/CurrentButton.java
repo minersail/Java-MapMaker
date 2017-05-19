@@ -9,6 +9,7 @@ public class CurrentButton extends TileButton
     private int spriteRotation = 0;
 	private int decorationRotation = 0;
 	private boolean decorationMode = false;
+	private boolean functionMode = false;
        
     public CurrentButton(Skin skin, TextureRegion spr)
     {
@@ -38,6 +39,11 @@ public class CurrentButton extends TileButton
 	public void toggleDecorationMode()
 	{
 		decorationMode = !decorationMode;
+	}
+	
+	public void toggleFunctionMode()
+	{
+		functionMode = !functionMode;
 	}
 	
 	@Override

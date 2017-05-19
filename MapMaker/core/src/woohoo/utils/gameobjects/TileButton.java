@@ -31,6 +31,11 @@ public class TileButton extends Button
 	{
 		sprite = new TextureRegion(text, (tile % Tile.TILE_COLUMNS) * Tile.T_TILE_WIDTH, (tile / Tile.TILE_COLUMNS) * Tile.T_TILE_HEIGHT, Tile.T_TILE_WIDTH, Tile.T_TILE_HEIGHT);
 	}
+	
+	public void switchTexture(TextureRegion region)
+	{
+		sprite = region;
+	}
     
     public String getImagePath()
     {

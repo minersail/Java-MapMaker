@@ -1,5 +1,6 @@
 package woohoo.utils.gameobjects;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
@@ -9,6 +10,11 @@ import com.badlogic.gdx.math.GridPoint2;
 
 public class Tile
 {	
+	public enum TileFunction
+	{
+		Normal, Wall, Blind
+	}
+	
     private GridPoint2 position = new GridPoint2();
     private TextureRegion tile; // Base layer
 	private TextureRegion decoration; // Decorative layer, starts as null
@@ -18,7 +24,7 @@ public class Tile
     private int rotation = 0; // must be in multiples of 90
 	private int decorationRotation = 0; // must be in multiples of 90
     private Color color = Color.WHITE; // Only for editor's purpose, does not show up in function/texture ids
-    private boolean isWall;
+    private TileFunction tileFunction;
 	
 	/* Dimensions of tiles in-game */
     public static final int G_TILE_WIDTH = 64;
@@ -31,6 +37,7 @@ public class Tile
 	public static final int TILE_COLUMNS = 16;
     
     public static final Texture wallOutline = new Texture("images/wallOutline.png");
+    public static final Texture blindOutline = new Texture("images/blindOutline.png");
 	public static Texture tileset1;
 	public static Texture tileset2;
     
@@ -59,7 +66,19 @@ public class Tile
 			decoration.flip(false, true);
 		}
 		rotation = 90 * (functionID % 4);
-        isWall = functionID >= 4 && functionID <= 7;
+		
+		if (functionID > 11)
+		{
+			Gdx.app.error("WARNING", "Invalid function ID: " + functionID);
+			tileFunction = TileFunction.Normal;
+			functionID = functionID % 4;
+		}
+		else if (functionID >= 7)
+			tileFunction = TileFunction.Blind;
+		else if (functionID >= 3)
+			tileFunction = TileFunction.Wall;
+		else
+			tileFunction = TileFunction.Normal;
 		
 		tile.flip(false, true);
     }
@@ -84,7 +103,7 @@ public class Tile
         tile = new TextureRegion(tileset1, tileX, tileY, T_TILE_WIDTH, T_TILE_HEIGHT);
 		rotation = t.rotation;
 		decorationRotation = t.decorationRotation;
-        isWall = t.isWall;
+        tileFunction = t.tileFunction;
 		
 		if (t.decoration != null)
 		{
@@ -120,8 +139,10 @@ public class Tile
                      1, 1,                                                          // Scale
                      decorationRotation);                                           // Rotation
 		
-        if (isWall)
+        if (tileFunction == TileFunction.Wall)
             batcher.draw(new TextureRegion(wallOutline), position.x * G_TILE_WIDTH, position.y * G_TILE_HEIGHT);
+		else if (tileFunction == TileFunction.Blind)
+            batcher.draw(new TextureRegion(blindOutline), position.x * G_TILE_WIDTH, position.y * G_TILE_HEIGHT);
         batcher.setColor(Color.WHITE);
     }
 	
@@ -214,17 +235,22 @@ public class Tile
         position.y += deltaY;
     }
     
-    public void toggleWall()
+    public void toggleFunction(TileFunction function)
     {
-		isWall = !isWall;
+		tileFunction = function;
 		
-		if (isWall)
+		int rot = functionID % 4;
+		switch(function)
 		{
-			functionID += 4;
-		}
-		else
-		{
-			functionID -= 4;
+			case Blind:
+				functionID = 8 + rot;
+				break;
+			case Wall:
+				functionID = 4 + rot;
+				break;
+			case Normal:
+				functionID = rot;
+				break;
 		}
     }
 }

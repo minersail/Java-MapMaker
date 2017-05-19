@@ -1,3 +1,3 @@
-maps/gibberish.txt
+maps/visiontest.txt
 images/tileset1.png
 images/d_tileset1.png

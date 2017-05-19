@@ -15,6 +15,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import java.util.List;
+import woohoo.utils.gameobjects.Tile.TileFunction;
 import woohoo.utils.screens.PlayingScreen;
 
 public class TileSelector
@@ -34,14 +35,19 @@ public class TileSelector
     private final Texture left2;
     private final Texture right2;
 	
+	private final Texture wall;
+	private final Texture eye;
+	private final Texture reset;
+	
 	private final TileButton up;
 	private final TileButton down;
     
     private final int MAX_ID = 255;
-	private int savedID = 0;
-	private int savedIndex = 0;
+	private int savedID = 0; // ID of current tile
+	private int savedIndex = 0; // Index of first tile
+	private TileFunction function;
 	
-	private int SHIFT_INDEX = 2;
+	private int SHIFT_INDEX = 2; // Location of the first select tile (because first two are arrow buttons)
     
     public TileSelector(PlayingScreen scr)
     {
@@ -55,6 +61,11 @@ public class TileSelector
 		left = new Texture("images/leftbutton.png");
 		right2 = new Texture("images/rightbutton2.png");
 		left2 = new Texture("images/leftbutton2.png");
+		
+		wall = new Texture("images/wall.png");
+		eye = new Texture("images/vision.png");
+		reset = new Texture("images/reset.png");
+		
         uiStage = new Stage(new ScreenViewport());
         selectRow = new Table();
         editRow = new Table();
@@ -68,10 +79,31 @@ public class TileSelector
             @Override
             public void clicked(InputEvent event, float x, float y)
             {
-				if (screen.getInput().getDecorationMode())
-					current.setDecorationRotation(current.getDecorationRotation() + 90);					
+				if (screen.getInput().getFunctionMode())
+				{
+					switch(function)
+					{
+						case Wall:
+							function = TileFunction.Blind;
+							current.switchTexture(new TextureRegion(eye));
+							break;
+						case Blind:
+							function = TileFunction.Normal;
+							current.switchTexture(new TextureRegion(reset));
+							break;
+						case Normal:
+							function = TileFunction.Wall;
+							current.switchTexture(new TextureRegion(wall));
+							break;
+					}
+				}
 				else
-					current.setSpriteRotation(current.getSpriteRotation() + 90);
+				{
+					if (screen.getInput().getDecorationMode())
+						current.setDecorationRotation(current.getDecorationRotation() + 90);					
+					else
+						current.setSpriteRotation(current.getSpriteRotation() + 90);
+				}
             }
         });
         editRow.add(current).prefWidth(80).prefHeight(80);
@@ -108,17 +140,29 @@ public class TileSelector
             editRow.row();
         }
         
-        TileButton wall = new TileButton(skin, new TextureRegion(new Texture("images/wall.png")));
-        wall.addListener(new ClickListener()
+        TileButton functionButton = new TileButton(skin, new TextureRegion(new Texture("images/functionbutton.png")));
+        functionButton.addListener(new ClickListener()
         {
             @Override
             public void clicked(InputEvent event, float x, float y)
             {
-                wall.setColor(wall.getColor().toString().equals("ffd700ff") ? Color.WHITE : Color.GOLD); // ffd700ff is gold rgb
-                screen.getInput().toggleWallMode();
+                screen.getInput().toggleFunctionMode();
+				current.toggleFunctionMode();
+				function = TileFunction.Wall;
+				
+				if (screen.getInput().getFunctionMode())
+				{
+					functionButton.setColor(Color.GOLD);
+					current.switchTexture(new TextureRegion(wall));
+				}
+				else
+				{
+					functionButton.setColor(Color.WHITE);
+					current.switchTexture(screen.getInput().getDecorationMode() ? tileSet2 : tileSet1, savedID);
+				}
             }
         });
-        editRow.add(wall).prefWidth(80).prefHeight(80);
+        editRow.add(functionButton).prefWidth(80).prefHeight(80);
         editRow.row();
 		
 		TileButton layer = new TileButton(skin, new TextureRegion(new Texture("images/switchlayer.png")));
@@ -127,8 +171,8 @@ public class TileSelector
             @Override
             public void clicked(InputEvent event, float x, float y)
             {
-				layer.setColor(layer.getColor().toString().equals("ffd700ff") ? Color.WHITE : Color.GOLD); // ffd700ff is gold rgb
-				switchTexture(layer.getColor().toString().equals("ffd700ff") ? tileSet2 : tileSet1);
+				layer.setColor(screen.getInput().getDecorationMode() ? Color.WHITE : Color.GOLD); // ffd700ff is gold rgb
+				switchTexture(screen.getInput().getDecorationMode() ? tileSet1 : tileSet2);
 				screen.getInput().toggleDecorationMode();
 				current.toggleDecorationMode();
             }
@@ -235,7 +279,8 @@ public class TileSelector
                 @Override
                 public void clicked(InputEvent event, float x, float y)
                 {
-                    current.setTextureID(button.getTextureID());
+					if (!screen.getInput().getFunctionMode())
+						current.setTextureID(button.getTextureID());
                 }
             });
             
@@ -379,6 +424,11 @@ public class TileSelector
         // 360 is because UI is not y-flipped and so rotates the other direction
         return decoration ? 360 - (int)current.getDecorationRotation() : 360 - (int)current.getSpriteRotation();
     }
+	
+	public TileFunction getFunction()
+	{
+		return function;
+	}
 	
 	private void writeCodes(List<String> codes, FileHandle file)
 	{
